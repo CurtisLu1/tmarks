@@ -69,7 +69,7 @@ const faqs = [
   },
   {
     question: '数据安全吗？',
-    answer: '数据存储于 Cloudflare 基础设施，使用 JWT 认证和最新 React/Next 安全修复版本。',
+    answer: '数据存储于自托管的 PostgreSQL 与对象存储（MinIO/S3 兼容），全链路 HTTPS + JWT 认证，保持最新的 React/Next 安全更新。',
   },
 ];
 

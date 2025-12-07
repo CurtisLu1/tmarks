@@ -2,7 +2,7 @@ import { Github, Globe, Heart, Shield, Star, Zap } from 'lucide-react';
 
 export default function AboutPage() {
   const frontendStack = ['Next.js 15', 'React 19', 'TypeScript', 'App Router', 'TailwindCSS', 'shadcn/ui', 'Zustand', 'React Query'];
-  const backendStack = ['Cloudflare Pages', 'Cloudflare D1', 'Cloudflare KV', 'JWT'];
+  const backendStack = ['Next.js API Routes', 'PostgreSQL', 'Redis', 'MinIO / 对象存储', 'JWT'];
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
@@ -31,7 +31,7 @@ export default function AboutPage() {
               </div>
               <h3 className="font-semibold text-foreground">快速高效</h3>
             </div>
-            <p className="text-sm text-muted-foreground">基于 Cloudflare 全球网络与静态导出优化，提供极速体验</p>
+            <p className="text-sm text-muted-foreground">基于 SSR + Redis 缓存与对象存储优化，提供稳定性能</p>
           </div>
 
           <div className="card p-5 space-y-2">
@@ -124,7 +124,7 @@ export default function AboutPage() {
           感谢所有贡献者，以及以下优秀的开源项目和服务：
         </p>
         <div className="grid sm:grid-cols-2 gap-2 text-sm text-muted-foreground">
-          <div>• Cloudflare Pages & D1</div>
+          <div>• Next.js & React</div>
           <div>• Next.js & React</div>
           <div>• TailwindCSS & shadcn/ui</div>
           <div>• Lucide Icons</div>

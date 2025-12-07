@@ -7,7 +7,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3%20%7C%2019-61dafb.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0%20%7C%207-646cff.svg)](https://vitejs.dev/)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers-f38020.svg)](https://workers.cloudflare.com/)
 [![许可证](https://img.shields.io/badge/许可证-MIT-green.svg)](LICENSE)
 
 简体中文
@@ -24,43 +23,45 @@ TMarks 是一个现代化的智能书签管理系统，结合 AI 技术自动生
 
 ### 核心特性
 
-- 📚 **智能书签管理** - AI自动标签、多维筛选、批量操作、拖拽排序
+- 📚 **智能书签管理** - AI 自动标签、多维筛选、批量操作、拖拽排序
 - 🗂️ **标签页组管理** - 一键收纳标签页、智能分组、快速恢复
-- 🌐 **公开分享** - 创建个性化书签展示页、KV缓存加速
-- 🔌 **浏览器扩展** - 快速保存、AI推荐、离线支持、自动同步
-- 🔐 **安全可靠** - JWT认证、API Key管理、数据加密
+- 🌐 **公开分享** - 创建个性化书签展示页、Redis 缓存加速
+- 🔌 **浏览器扩展** - 快速保存、AI 推荐、离线支持、自动同步
+- 🔐 **安全可靠** - JWT 认证、API Key 管理、数据加密
 
 ### 技术栈
 
 - **前端**: React 18/19 + TypeScript + Vite + TailwindCSS 4
-- **后端**: Cloudflare Workers + Pages Functions
-- **数据库**: Cloudflare D1 (SQLite)
-- **缓存**: Cloudflare KV
-- **快照存储**: Cloudflare R2（可选，用于存储网页快照 HTML 与图片，支持全局 7GB 配额限制）
-- **AI集成**: 支持 OpenAI、Anthropic、DeepSeek、智谱等 8+ 提供商
+- **后端（自托管）**: Next.js App Router + PostgreSQL + Redis + MinIO/本地存储（Dokploy / Docker Compose）
+- **数据库**: PostgreSQL 16
+- **缓存**: Redis
+- **文件存储**: MinIO 或本地对象存储
+- **AI 集成**: 支持 OpenAI、Anthropic、DeepSeek、智谱等 8+ 提供商
 
 ---
 
 ## 🚀 快速开始
 
-### 本地开发
+### 本地开发（自托管）
 
 ```bash
 # 1. 克隆项目
 git clone https://github.com/ai-tmarks/tmarks.git
-cd tmarks
+cd tmarks/tmarks
 
 # 2. 安装依赖
-cd tmarks
 pnpm install
 
-# 3. 创建数据库并迁移
-wrangler d1 create tmarks-prod-db --local
-pnpm db:migrate:local
+# 3. 启动本地依赖（需要 docker）
+docker compose -f docker-compose.dev.yml up -d postgres redis minio
 
-# 4. 启动开发服务器
+# 4. 初始化数据库 / 存储
+cp .env.example .env
+./scripts/setup.sh .env
+
+# 5. 启动开发服务器
 pnpm dev
-# 访问 http://localhost:5173
+# 访问 http://localhost:3000
 ```
 
 ### 浏览器扩展开发
@@ -78,7 +79,47 @@ pnpm dev
 # Firefox: about:debugging → 临时载入附加组件 → 选择 tab/dist/manifest.json
 ```
 
----
+### 自托管 / Dokploy 开发环境（Docker Compose）
+
+```bash
+cp .env.example .env
+# 修改 JWT_SECRET、POSTGRES_PASSWORD、MINIO_* 等敏感变量
+
+# 启动依赖服务
+docker compose -f docker-compose.dev.yml up -d postgres redis minio
+
+# 安装依赖（挂载了本地代码与空的 node_modules 卷，需要执行一次）
+docker compose -f docker-compose.dev.yml run --rm app pnpm install
+
+# 初始化数据库 / MinIO bucket
+docker compose -f docker-compose.dev.yml run --rm app ./scripts/setup.sh .env
+
+# 启动开发模式（热重载）
+docker compose -f docker-compose.dev.yml up app
+# 访问 http://localhost:3000
+```
+
+### 自托管 / Dokploy 生产部署（Docker Compose）
+
+Dokploy 可直接导入本仓库的 `Dockerfile` 与 `docker-compose.yml`。手动部署步骤：
+
+```bash
+cd tmarks/tmarks
+cp .env.example .env
+# 设置 JWT_SECRET / POSTGRES_PASSWORD / MINIO_* / DATABASE_URL 等值
+
+# 启动依赖
+docker compose up -d postgres redis minio
+
+# 运行初始化脚本（迁移数据库 + 创建存储目录/桶）
+docker compose run --rm app ./scripts/setup.sh .env
+
+# 启动应用
+docker compose up -d app
+
+# 健康检查
+curl http://localhost:3000/api/v1/health
+```
 
 ## 🚀 部署
 
@@ -92,77 +133,12 @@ pnpm dev
 
 ### 开源用户一页部署指南
 
-**前置条件**
-- 有 Cloudflare 账号
-- 有 GitHub 账号
-
----
-
-#### 1. 连接仓库并配置构建
-1. 在 GitHub 上 Fork 本仓库
-2. 打开 Cloudflare Dashboard → **Workers & Pages** → **Pages** → **创建项目**
-3. 选择「连接到 Git」，选中你的 Fork
-4. 构建配置：
-   - 根目录：`tmarks`
-   - 构建命令：`pnpm install && pnpm build:deploy`
-   - 构建输出目录：`.deploy`
-5. 保存并触发一次部署（第一次失败没关系，后面会修好）
-
-#### 2. 创建 Cloudflare 资源
-1. **D1 数据库（必需）**
-   - Workers & Pages → **D1 SQL Database** → Create database
-   - 名称：`tmarks-prod-db`
-2. **KV 命名空间（推荐）**
-   - Workers & Pages → **KV** → Create a namespace
-   - 名称：`TMARKS_KV`
-   - 不创建也能运行，但会失去 KV 缓存和限流保护
-3. **R2 存储桶（可选，快照用）**
-   - R2 对象存储 → 创建存储桶
-   - 名称：`tmarks-snapshots`
-   - 不创建则快照功能不可用，但其他功能正常
-
-#### 3. 在 Pages 项目中绑定资源
-进入 Pages 项目 → **设置 → 函数**：
-
-- D1 绑定：
-  - 新建 D1 绑定，变量名：`DB` → 选择 `tmarks-prod-db`
-- KV 绑定（如果创建了 KV）：
-  - 新建 KV 绑定，变量名：`TMARKS_KV` → 选择 `TMARKS_KV`
-- R2 绑定（如果创建了 R2）：
-  - 新建 R2 绑定，变量名：`SNAPSHOTS_BUCKET` → 选择 `tmarks-snapshots`
-
-> 没有 KV / R2 时，可以跳过对应绑定，应用仍然可以启动。
-
-#### 4. 配置环境变量
-进入 Pages 项目 → **设置 → 环境变量（生产环境）**，建议配置：
-
-- 业务相关：
-  - `ALLOW_REGISTRATION`：是否允许新用户注册，推荐 "true"
-    （设为非 "true"——包括 "false" 或留空——都会关闭注册；推荐的关闭方式是 **直接删除该变量**）
-  - `ENVIRONMENT`：运行环境，生产环境设为 `production`
-  - `JWT_ACCESS_TOKEN_EXPIRES_IN`：访问 Token 有效期，推荐 `365d`
-  - `JWT_REFRESH_TOKEN_EXPIRES_IN`：刷新 Token 有效期，推荐 `365d`
-- R2 相关（如果启用快照 / 封面图走 R2）：
-  - `R2_PUBLIC_URL`：**可选**，封面图使用 R2 存储时的对外访问域名（例如 `https://pub-xxxxx.r2.dev`）；快照本身通过 API 访问，不依赖该值
-  - `R2_MAX_TOTAL_BYTES`：R2 总存储上限（字节），可选；不配置或设为 `0` / 负数 表示不限制（如需限制可手动设置，例如约 7GiB）
-- 敏感变量（**只在 Dashboard 里配置，千万不要写入仓库**）：
-  - `JWT_SECRET`：JWT 签名密钥（建议 ≥ 48 位随机字符串）
-  - `ENCRYPTION_KEY`：数据加密密钥（建议 ≥ 48 位随机字符串）
-
-> 本地 / 自托管部署时，可参考 `tmarks/wrangler.toml.example` 中的 `[vars]` 示例，业务配置可直接照抄，敏感密钥仅在 Dashboard 中填写真实值。
-
-#### 5. 初始化数据库
-1. 打开 **Workers & Pages → D1 SQL Database**
-2. 进入 `tmarks-prod-db` → **Console**
-3. 打开仓库中的 `tmarks/migrations/d1_console_pure.sql`
-4. 复制全部 SQL，粘贴到控制台，点击 **Execute** 执行
-
-#### 6. 重新部署
-1. 回到 Pages 项目 → 部署
-2. 对之前失败的部署点击「重试」，或推送任意提交重新触发
-3. 构建成功后，就可以访问你的 TMarks 站点了 🎉
-
-> 之后更新：只要往 GitHub 推代码，Cloudflare 会自动重新构建和部署，之前配置的数据库 / KV / R2 / 环境变量都不会丢。
+自托管快速步骤（Dokploy / Docker Compose）：
+1. Fork 仓库并拉取代码到服务器。
+2. 进入 `tmarks` 目录，复制并填写 `.env`（数据库、Redis、MinIO、JWT）。
+3. `docker compose up -d postgres redis minio` 启动依赖。
+4. `docker compose run --rm app ./scripts/setup.sh .env` 运行迁移与存储初始化。
+5. `docker compose up -d app` 启动应用，健康检查 `GET /api/v1/health`。
 ---
 
 

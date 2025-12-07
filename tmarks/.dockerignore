@@ -1,0 +1,12 @@
+node_modules
+.next
+.pnpm-store
+.turbo
+.git
+dist
+drizzle
+coverage
+*.log
+tmp
+tab
+

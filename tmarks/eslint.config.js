@@ -15,7 +15,6 @@ export default tseslint.config(
       'dist',
       'dist-ssr',
       'build',
-      '.wrangler',
       '**/*.config.js',
       '**/*.config.ts',
       'vite.config.ts',

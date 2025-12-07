@@ -98,7 +98,7 @@ export default function PrivacyPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-success mt-0.5">✓</span>
-              <span>数据存储在 Cloudflare 的安全基础设施上</span>
+              <span>数据存储在自托管的 PostgreSQL 与对象存储（MinIO/S3 兼容）上</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-success mt-0.5">✓</span>
@@ -164,23 +164,7 @@ export default function PrivacyPage() {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-foreground">第三方服务</h2>
-        <div className="card p-6 space-y-3">
-          <p className="text-sm text-muted-foreground">TMarks 使用以下第三方服务：</p>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-0.5">•</span>
-              <span>
-                <strong>Cloudflare</strong>：提供托管、数据库和 CDN 服务
-              </span>
-            </li>
-          </ul>
-          <p className="text-sm text-muted-foreground">
-            这些服务提供商有自己的隐私政策，我们建议您查阅它们的政策。
-          </p>
-        </div>
-      </div>
+      {/* 自托管部署，不使用第三方托管 */}
 
       <div className="space-y-4">
         <h2 className="text-xl font-bold text-foreground">政策更新</h2>

@@ -117,15 +117,13 @@ export function DataSettingsTab() {
 
   return (
     <div className="space-y-6">
-      {/* R2 存储使用情况 */}
+      {/* 对象存储使用情况 */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-primary" />
           <div>
-            <h3 className="text-sm font-semibold text-foreground">R2 存储使用情况（全局）</h3>
-            <p className="text-xs text-muted-foreground">
-              包含所有快照和封面图在 R2 中的总占用
-            </p>
+            <h3 className="text-sm font-semibold text-foreground">对象存储使用情况（全局）</h3>
+            <p className="text-xs text-muted-foreground">包含所有快照和封面图在对象存储中的总占用</p>
           </div>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -138,13 +136,9 @@ export function DataSettingsTab() {
                 {(r2Quota.used_bytes / (1024 * 1024 * 1024)).toFixed(2)} GB
               </strong>
               {' / '}
-              {r2Quota.unlimited || r2Quota.limit_bytes === null ? (
-                '无限制'
-              ) : (
-                <>
-                  {(r2Quota.limit_bytes / (1024 * 1024 * 1024)).toFixed(2)} GB
-                </>
-              )}
+              {r2Quota.unlimited || r2Quota.limit_bytes === null
+                ? '无限制'
+                : `${(r2Quota.limit_bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`}
             </>
           )}
         </p>
@@ -250,10 +244,10 @@ export function DataSettingsTab() {
             <div className="flex-1">
               <div className="text-sm font-medium mb-1">清理孤立快照记录</div>
               <div className="text-xs text-muted-foreground space-y-1 mb-3">
-                <div>• 检查所有快照记录，验证 R2 文件是否存在</div>
-                <div>• 删除 R2 文件不存在的数据库记录</div>
+                <div>• 检查所有快照记录，验证对象存储文件是否存在</div>
+                <div>• 删除对象存储文件不存在的数据库记录</div>
                 <div>• 自动更新书签的快照计数</div>
-                <div>• 适用于手动删除 R2 文件后的数据修复</div>
+                <div>• 适用于手动删除存储文件后的数据修复</div>
               </div>
               <button
                 onClick={handleCleanupAllSnapshots}
