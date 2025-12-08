@@ -378,7 +378,7 @@ export default function BookmarksPage() {
     <div className="w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] flex flex-col overflow-hidden touch-pan-y">
       <div className="flex flex-col lg:flex-row gap-0 lg:gap-4 w-full h-full overflow-hidden touch-pan-y">
         {/* 左侧：标签侧边栏 - 桌面端显示 */}
-        <aside className="hidden lg:flex flex-shrink-0 w-60 xl:w-64 2xl:w-72 order-2 lg:order-1 flex-col overflow-hidden">
+        <aside className="hidden lg:flex flex-shrink-0 w-72 xl:w-80 2xl:w-96 order-2 lg:order-1 flex-col overflow-hidden">
           <TagSidebar
             selectedTags={selectedTags}
             onTagsChange={(next) => setQueryStates({ tags: next })}
@@ -537,10 +537,10 @@ export default function BookmarksPage() {
                         setQueryStates({ visibility: nextFilter });
                       }}
                       className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all shadow-float touch-manipulation flex-shrink-0 ${visibilityFilter === 'all'
-                          ? 'bg-muted text-foreground hover:bg-muted/80'
-                          : visibilityFilter === 'public'
-                            ? 'bg-success/10 text-success hover:bg-success/20'
-                            : 'bg-warning/10 text-warning hover:bg-warning/20'
+                        ? 'bg-muted text-foreground hover:bg-muted/80'
+                        : visibilityFilter === 'public'
+                          ? 'bg-success/10 text-success hover:bg-success/20'
+                          : 'bg-warning/10 text-warning hover:bg-warning/20'
                         }`}
                       title="切换可见性"
                       aria-label="切换可见性"
@@ -591,8 +591,8 @@ export default function BookmarksPage() {
                         }
                       }}
                       className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all shadow-float touch-manipulation flex-shrink-0 ${batchMode
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-foreground hover:bg-muted/80'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-foreground hover:bg-muted/80'
                         }`}
                       title={batchMode ? '退出批量操作' : '批量操作'}
                       aria-label={batchMode ? '退出批量操作' : '批量操作'}
