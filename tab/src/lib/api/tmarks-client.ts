@@ -158,7 +158,7 @@ export class TMarksClient {
   constructor(config: TMarksConfig) {
     this.config = {
       apiKey: config.apiKey,
-      baseUrl: config.baseUrl || 'https://tmarks.669696.xyz/api',
+      baseUrl: config.baseUrl || 'https://tmarks.makeliving.fun/api',
     };
   }
 

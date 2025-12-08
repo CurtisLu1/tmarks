@@ -50,7 +50,7 @@ export function TMarksConfigSection({ formData, setFormData }: TMarksConfigSecti
               <li>• TMarks 是一个标签为主的书签导航</li>
               <li>• 支持多设备同步、标签管理、全文搜索等功能</li>
               <li>• 填写基础地址即可，系统会自动补全 /api 路径</li>
-              <li>• 例如：<code className="px-1 bg-gray-100 dark:bg-gray-700 rounded">https://tmarks.669696.xyz</code></li>
+              <li>• 例如：<code className="px-1 bg-gray-100 dark:bg-gray-700 rounded">https://tmarks.makeliving.fun</code></li>
             </ul>
           </div>
           </div>

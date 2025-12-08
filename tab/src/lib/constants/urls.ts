@@ -5,13 +5,13 @@
 
 // TMarks 服务相关
 export const TMARKS_URLS = {
-    DEFAULT_BASE_URL: 'https://tmarks.669696.xyz',
-    DEFAULT_API_BASE: 'https://tmarks.669696.xyz/api',
+    DEFAULT_BASE_URL: 'https://tmarks.makeliving.fun',
+    DEFAULT_API_BASE: 'https://tmarks.makeliving.fun/api',
 } as const;
 
 /**
  * 根据基础 URL 生成完整的 URL
- * @param baseUrl 基础 URL（例如：https://tmarks.669696.xyz）
+ * @param baseUrl 基础 URL（例如：https://tmarks.makeliving.fun）
  */
 export function getTMarksUrls(baseUrl?: string) {
     const base = baseUrl || TMARKS_URLS.DEFAULT_BASE_URL;
@@ -33,10 +33,10 @@ export function getTMarksUrls(baseUrl?: string) {
  * @returns 标准化后的 API URL
  * 
  * @example
- * normalizeApiUrl('https://tmarks.669696.xyz') // => 'https://tmarks.669696.xyz/api'
- * normalizeApiUrl('https://tmarks.669696.xyz/') // => 'https://tmarks.669696.xyz/api'
- * normalizeApiUrl('https://tmarks.669696.xyz/api') // => 'https://tmarks.669696.xyz/api'
- * normalizeApiUrl('https://tmarks.669696.xyz/api/') // => 'https://tmarks.669696.xyz/api'
+ * normalizeApiUrl('https://tmarks.makeliving.fun') // => 'https://tmarks.makeliving.fun/api'
+ * normalizeApiUrl('https://tmarks.makeliving.fun/') // => 'https://tmarks.makeliving.fun/api'
+ * normalizeApiUrl('https://tmarks.makeliving.fun/api') // => 'https://tmarks.makeliving.fun/api'
+ * normalizeApiUrl('https://tmarks.makeliving.fun/api/') // => 'https://tmarks.makeliving.fun/api'
  */
 export function normalizeApiUrl(url: string): string {
     if (!url) {

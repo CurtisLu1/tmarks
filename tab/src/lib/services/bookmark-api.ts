@@ -25,8 +25,8 @@ export class BookmarkAPIClient {
 
     // 从配置的 URL 获取 API 基础地址
     // 支持两种格式：
-    // 1. 基础 URL（推荐）：https://tmarks.669696.xyz -> https://tmarks.669696.xyz/api
-    // 2. 完整 API URL（兼容旧版）：https://tmarks.669696.xyz/api -> https://tmarks.669696.xyz/api
+    // 1. 基础 URL（推荐）：https://tmarks.makeliving.fun -> https://tmarks.makeliving.fun/api
+    // 2. 完整 API URL（兼容旧版）：https://tmarks.makeliving.fun/api -> https://tmarks.makeliving.fun/api
     let apiBaseUrl: string;
     if (configuredUrl) {
       if (configuredUrl.endsWith('/api')) {

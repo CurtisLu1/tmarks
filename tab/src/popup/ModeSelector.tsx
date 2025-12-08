@@ -35,7 +35,7 @@ export function ModeSelector({ onSelectBookmark, onSelectTabCollection, onOpenOp
       const config = await StorageService.getTMarksConfig();
       if (config?.bookmarkApiUrl) {
         // 从 API URL 中提取基础 URL
-        // 例如：https://tmarks.669696.xyz/api -> https://tmarks.669696.xyz
+        // 例如：https://tmarks.makeliving.fun/api -> https://tmarks.makeliving.fun
         const baseUrl = config.bookmarkApiUrl.replace(/\/api\/?$/, '');
         setTmarksUrls(getTMarksUrls(baseUrl));
       }
