@@ -98,7 +98,7 @@ export function TagItem({ tag, isSelected, isRelated, hasSelection, layout, onTo
             )}
           </div>
 
-          <span className={`text-xs ${layout === 'masonry' ? 'whitespace-nowrap' : 'truncate flex-1'} ${isSelected ? 'font-semibold' : 'font-medium'}`}>
+          <span className={`text-xs ${layout === 'masonry' ? 'whitespace-nowrap' : ''} ${isSelected ? 'font-semibold' : 'font-medium'}`} title={tag.name}>
             {tag.name}
           </span>
 

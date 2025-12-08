@@ -182,8 +182,8 @@ export function TagSidebar({
               <button
                 onClick={() => setShowCreateForm(!showCreateForm)}
                 className={`btn btn-sm p-2 flex-shrink-0 ${showCreateForm
-                    ? 'btn-ghost'
-                    : 'btn-ghost'
+                  ? 'btn-ghost'
+                  : 'btn-ghost'
                   }`}
                 title={showCreateForm ? '取消' : '新建标签'}
               >
@@ -253,7 +253,7 @@ export function TagSidebar({
                 ? 'flex flex-wrap items-start gap-2'
                 : 'grid gap-2'
                 }`}
-              style={tagLayout === 'grid' ? { gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))' } : undefined}
+              style={tagLayout === 'grid' ? { gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' } : undefined}
             >
               {orderedTags.map((tag) => (
                 <TagItem
