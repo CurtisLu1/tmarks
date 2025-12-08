@@ -118,6 +118,20 @@ async function handlePatch(request: NextRequest, userId: string, bookmarkId: str
   if (body.is_archived !== undefined) updates.isArchived = Boolean(body.is_archived);
   if (body.is_public !== undefined) updates.isPublic = Boolean(body.is_public);
 
+  // Process cover image if it's being updated and not null
+  if (body.cover_image) {
+    const { processCoverImage } = await import('@/lib/bookmarks/cover-image');
+    const result = await processCoverImage(body.cover_image, bookmarkId, userId);
+
+    if (result.isLocal) {
+      updates.coverImage = result.url;
+      updates.coverImageId = result.imageId;
+    }
+  } else if (body.cover_image === null) {
+    // Explicitly removing cover image
+    updates.coverImageId = null;
+  }
+
   if (Object.keys(updates).length > 0) {
     updates.updatedAt = new Date().toISOString();
     await db.update(bookmarks).set(updates).where(eq(bookmarks.id, bookmarkId));

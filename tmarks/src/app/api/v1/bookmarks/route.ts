@@ -387,6 +387,24 @@ async function handlePost(request: NextRequest, userId: string) {
     return internalError('Failed to load bookmark after creation');
   }
 
+  // Process cover image (store to MinIO)
+  if (coverImage) {
+    const { processCoverImage } = await import('@/lib/bookmarks/cover-image');
+    const result = await processCoverImage(coverImage, bookmarkId, userId);
+
+    if (result.isLocal && result.url !== coverImage) {
+      await db
+        .update(bookmarks)
+        .set({
+          coverImage: result.url,
+          coverImageId: result.imageId, // result.imageId is string | undefined
+        })
+        .where(eq(bookmarks.id, bookmarkId));
+
+      savedBookmark.coverImage = result.url;
+    }
+  }
+
   return created({
     bookmark: toApiBookmark(savedBookmark, tagRows),
   });
