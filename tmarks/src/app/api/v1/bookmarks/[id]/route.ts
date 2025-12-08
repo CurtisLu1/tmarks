@@ -98,6 +98,9 @@ async function handlePatch(request: NextRequest, userId: string, bookmarkId: str
 
   if (!existing) return notFound('Bookmark not found');
 
+  // 获取更新前的关联标签 IDs，用于后续清理检查
+  const oldTagIds = await getBookmarkTagIds(bookmarkId);
+
   const body = (await request.json()) as UpdateBookmarkRequest;
 
   if (body.url && !isValidUrl(body.url)) {
@@ -140,6 +143,11 @@ async function handlePatch(request: NextRequest, userId: string, bookmarkId: str
 
   const updated = await loadBookmarkWithTags(bookmarkId, userId);
   if (!updated) return internalError('Failed to load bookmark after update');
+
+  // 清理可能变为空的标签（使用更新前的标签列表）
+  if (oldTagIds.length > 0) {
+    await cleanupEmptyTags(userId, oldTagIds);
+  }
 
   return success({ bookmark: updated });
 }
