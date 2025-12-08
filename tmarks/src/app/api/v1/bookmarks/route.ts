@@ -27,7 +27,7 @@ import {
   tags,
 } from '@/lib/db/schema';
 import { generateUUID } from '@/lib/crypto';
-import { createOrLinkTags } from '@/lib/tags';
+import { createOrLinkTags, getBookmarkTagIds } from '@/lib/tags';
 import {
   isValidUrl,
   sanitizeString,
@@ -302,25 +302,12 @@ async function handlePost(request: NextRequest, userId: string) {
   if (existing) {
     bookmarkId = existing.id;
 
-    if (!existing.deletedAt) {
-      const bookmarkTagsRows = await db
-        .select({
-          id: tags.id,
-          name: tags.name,
-          color: tags.color,
-        })
-        .from(bookmarkTags)
-        .innerJoin(tags, eq(tags.id, bookmarkTags.tagId))
-        .where(eq(bookmarkTags.bookmarkId, bookmarkId));
+    bookmarkId = existing.id;
 
-      return success(
-        {
-          bookmark: toApiBookmark(existing, bookmarkTagsRows),
-          code: 'BOOKMARK_EXISTS',
-          message: 'Bookmark already exists',
-        },
-      );
-    }
+    // Check if we need to clean up old tags before overwriting
+    // Actually, we are deleting all tags below, so we should check for empty tags based on what was there.
+    // Fetch old tags first
+    const oldTagIds = await getBookmarkTagIds(bookmarkId);
 
     await db
       .update(bookmarks)
@@ -328,17 +315,27 @@ async function handlePost(request: NextRequest, userId: string) {
         title,
         description,
         coverImage,
-        coverImageId: null,
+        coverImageId: null, // Reset ID, will be re-processed if coverImage is provided
         favicon,
         isPinned,
         isArchived,
         isPublic,
-        deletedAt: null,
+        deletedAt: null, // Restore if deleted
         updatedAt: now,
       })
       .where(eq(bookmarks.id, bookmarkId));
 
     await db.delete(bookmarkTags).where(eq(bookmarkTags.bookmarkId, bookmarkId));
+
+    // Clean up tags that might become empty after this update
+    // Note: We deleted all tags for this bookmark. If we add new ones later, they are fine.
+    // But the OLD tags might now be empty if this was their last bookmark.
+    if (oldTagIds.length > 0) {
+      // We can't await this here if we want speed, but for consistency we should.
+      // Import cleanupEmptyTags if not imported
+      const { cleanupEmptyTags } = await import('@/lib/tags');
+      await cleanupEmptyTags(userId, oldTagIds);
+    }
   } else {
     bookmarkId = generateUUID();
     await db.insert(bookmarks).values({
