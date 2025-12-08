@@ -13,7 +13,7 @@ interface MoveItemRequest {
 
 function getItemId(request: NextRequest): string {
   const segments = request.nextUrl.pathname.split('/');
-  return segments[segments.length - 2] || segments[segments.length - 1];
+  return segments[segments.length - 2] ?? segments[segments.length - 1] ?? '';
 }
 
 async function loadItemWithUser(itemId: string) {
