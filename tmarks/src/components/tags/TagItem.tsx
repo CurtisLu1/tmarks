@@ -13,15 +13,16 @@ interface TagItemProps {
 }
 
 export function TagItem({ tag, isSelected, isRelated, hasSelection, layout, onToggle }: TagItemProps) {
-  // 选中状态：使用浅色背景 + 深色文字，更柔和
-  // hasSelection 状态：不要太暗淡，保持可读性
+  // 选中状态：使用浅色背景 + 主色文字
+  // hasSelection 状态：保持可读性
+  // 默认状态：必须有明确的文字颜色
   const stateClasses = isSelected
     ? 'border-2 border-primary bg-primary/15 text-primary shadow-sm'
     : isRelated
       ? 'border border-primary/40 bg-primary/5 text-primary'
       : hasSelection
-        ? 'border border-border bg-muted/30 text-foreground/70'
-        : 'border border-border bg-card hover:border-primary/50 hover:bg-muted/20'
+        ? 'border border-border bg-muted/30 text-foreground'
+        : 'border border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/20'
 
   const indicatorClasses = isSelected
     ? 'bg-primary border-2 border-primary'

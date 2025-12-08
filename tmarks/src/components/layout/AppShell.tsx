@@ -43,14 +43,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-float">
               <BookOpen
                 className="w-5 h-5 sm:w-7 sm:h-7"
-                style={{color: 'var(--foreground)'}}
+                style={{ color: 'var(--foreground)' }}
               />
             </div>
             <div className="block text-left">
-              <h1 className="text-lg sm:text-2xl font-bold" style={{color: 'var(--primary)'}}>
+              <h1 className="text-lg sm:text-2xl font-bold" style={{ color: 'var(--primary)' }}>
                 TMarks
               </h1>
-              <p className="text-xs font-medium hidden sm:block" style={{color: 'var(--muted-foreground)'}}>
+              <p className="text-xs font-medium hidden sm:block" style={{ color: 'var(--muted-foreground)' }}>
                 {isOnTabGroupsPage ? '管理收纳的标签页组' : '智能书签管理'}
               </p>
             </div>
@@ -62,7 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button
               onClick={handleToggleView}
               className="hidden sm:flex items-center justify-center w-10 h-10 rounded-lg border border-border hover:border-primary hover:bg-card/50 transition-all duration-200"
-              style={{color: 'var(--foreground)'}}
+              style={{ color: 'var(--foreground)' }}
               title={isOnTabGroupsPage ? '切换到书签' : '切换到标签页组'}
             >
               {isOnTabGroupsPage ? (
@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* 主内容区 - 黄金比例容器 */}
       <main className="w-full pb-16 sm:pb-6 pt-3 sm:pt-6 flex flex-col min-h-0 flex-1">
-        <div className="mx-auto w-full px-3 sm:px-6" style={{ maxWidth: '1200px' }}>
+        <div className={`mx-auto w-full px-3 sm:px-6 ${pathname === '/' ? '' : 'max-w-[1400px]'}`}>
           {children}
         </div>
       </main>
