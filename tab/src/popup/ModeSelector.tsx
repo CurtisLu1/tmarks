@@ -12,10 +12,11 @@ import { StorageService } from '@/lib/utils/storage';
 interface ModeSelectorProps {
   onSelectBookmark: () => void;
   onSelectTabCollection: () => void;
+  onSelectTabGroupList: () => void;
   onOpenOptions: () => void;
 }
 
-export function ModeSelector({ onSelectBookmark, onSelectTabCollection, onOpenOptions }: ModeSelectorProps) {
+export function ModeSelector({ onSelectBookmark, onSelectTabCollection, onSelectTabGroupList, onOpenOptions }: ModeSelectorProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [tmarksUrls, setTmarksUrls] = useState(getTMarksUrls());
 
@@ -167,10 +168,36 @@ export function ModeSelector({ onSelectBookmark, onSelectTabCollection, onOpenOp
                 <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] text-gray-600">
                   <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-emerald-600">批量收纳</span>
                   <span className="rounded-md bg-teal-50 px-1.5 py-0.5 text-teal-600">一键恢复</span>
-                  <span className="rounded-md bg-cyan-50 px-1.5 py-0.5 text-cyan-600">节省内存</span>
                 </div>
               </div>
               <svg className="h-5 w-5 text-gray-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </button>
+
+          {/* Library Mode */}
+          <button
+            onClick={onSelectTabGroupList}
+            className="group w-full rounded-xl border border-gray-200 bg-white p-4 text-left shadow-lg transition-all duration-200 hover:scale-[1.02] hover:border-blue-300 hover:shadow-xl active:scale-[0.98]"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-400 to-cyan-400 shadow-lg shadow-blue-400/30 transition-transform duration-200 group-hover:scale-110">
+                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-base font-semibold text-gray-800">浏览资源库</h2>
+                <p className="mt-0.5 text-xs text-gray-600">
+                  查看与恢复已保存的云端标签分组
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] text-gray-600">
+                  <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-blue-600">云端列表</span>
+                  <span className="rounded-md bg-cyan-50 px-1.5 py-0.5 text-cyan-600">快速还原</span>
+                </div>
+              </div>
+              <svg className="h-5 w-5 text-gray-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </div>

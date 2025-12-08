@@ -7,8 +7,9 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { SuccessMessage } from '@/components/SuccessMessage';
 import { ModeSelector } from './ModeSelector';
 import { TabCollectionView } from './TabCollectionView';
+import { TabGroupListView } from './TabGroupListView';
 
-type ViewMode = 'selector' | 'bookmark' | 'tabCollection';
+type ViewMode = 'selector' | 'bookmark' | 'tabCollection' | 'tabGroupList';
 
 export function Popup() {
   const {
@@ -143,6 +144,10 @@ export function Popup() {
     setViewMode('tabCollection');
   };
 
+  const handleSelectTabGroupList = () => {
+    setViewMode('tabGroupList');
+  };
+
   const handleBackToSelector = () => {
     setViewMode('selector');
   };
@@ -153,6 +158,7 @@ export function Popup() {
       <ModeSelector
         onSelectBookmark={handleSelectBookmark}
         onSelectTabCollection={handleSelectTabCollection}
+        onSelectTabGroupList={handleSelectTabGroupList}
         onOpenOptions={openOptions}
       />
     );
@@ -165,6 +171,19 @@ export function Popup() {
     }
     return (
       <TabCollectionView
+        config={config.bookmarkSite}
+        onBack={handleBackToSelector}
+      />
+    );
+  }
+
+  // Show tab group list view
+  if (viewMode === 'tabGroupList') {
+    if (!config) {
+      return <div>Loading...</div>;
+    }
+    return (
+      <TabGroupListView
         config={config.bookmarkSite}
         onBack={handleBackToSelector}
       />
@@ -345,7 +364,7 @@ export function Popup() {
                     key={tag}
                     onClick={() => toggleTag(tag)}
                     title="点击移除标签"
-                className="inline-flex items-center rounded-lg bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 border border-blue-200 shadow-sm transition-all duration-200 hover:bg-blue-50 active:scale-95"
+                    className="inline-flex items-center rounded-lg bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 border border-blue-200 shadow-sm transition-all duration-200 hover:bg-blue-50 active:scale-95"
                   >
                     <span className="truncate max-w-[120px]">{tag}</span>
                   </button>
@@ -367,11 +386,10 @@ export function Popup() {
                       type="button"
                       onClick={() => setIsPublic(false)}
                       aria-pressed={!isPublic}
-                      className={`rounded-lg px-3 py-1 font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${
-                        !isPublic
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md'
-                          : 'text-gray-600 hover:text-gray-800'
-                      }`}
+                      className={`rounded-lg px-3 py-1 font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${!isPublic
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md'
+                        : 'text-gray-600 hover:text-gray-800'
+                        }`}
                     >
                       隐私
                     </button>
@@ -379,11 +397,10 @@ export function Popup() {
                       type="button"
                       onClick={() => setIsPublic(true)}
                       aria-pressed={isPublic}
-                      className={`rounded-lg px-3 py-1 font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
-                        isPublic
-                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
-                          : 'text-gray-600 hover:text-gray-800'
-                      }`}
+                      className={`rounded-lg px-3 py-1 font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${isPublic
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
+                        : 'text-gray-600 hover:text-gray-800'
+                        }`}
                     >
                       公开
                     </button>
@@ -393,11 +410,10 @@ export function Popup() {
                     type="button"
                     onClick={handleToggleThumbnail}
                     disabled={!currentPage.thumbnail}
-                    className={`rounded-lg border px-3 py-1 text-xs font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${
-                      includeThumbnail
-                        ? 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                        : 'border-amber-400 bg-amber-50 text-amber-700 shadow-sm'
-                    } ${!currentPage.thumbnail ? 'cursor-not-allowed opacity-40' : ''}`}
+                    className={`rounded-lg border px-3 py-1 text-xs font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${includeThumbnail
+                      ? 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                      : 'border-amber-400 bg-amber-50 text-amber-700 shadow-sm'
+                      } ${!currentPage.thumbnail ? 'cursor-not-allowed opacity-40' : ''}`}
                   >
                     {includeThumbnail ? '忽略封面图' : '恢复封面图'}
                   </button>
@@ -484,11 +500,10 @@ export function Popup() {
                         <button
                           key={tag.id}
                           onClick={() => toggleTag(tag.name)}
-                          className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${
-                            isSelected
-                              ? 'border border-emerald-300 bg-emerald-100 text-emerald-700 shadow-sm'
-                              : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                          }`}
+                          className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${isSelected
+                            ? 'border border-emerald-300 bg-emerald-100 text-emerald-700 shadow-sm'
+                            : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                            }`}
                         >
                           <span
                             className="mr-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full"
