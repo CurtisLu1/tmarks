@@ -56,10 +56,18 @@ async function handleGet(request: NextRequest, userId: string) {
         .where(eq(bookmarkSnapshots.bookmarkId, bookmarkId))
         .orderBy(desc(bookmarkSnapshots.version));
 
-    // Generate signed URLs for each snapshot
+    // Generate public URLs for each snapshot
+    const publicUrlBase = process.env.STORAGE_PUBLIC_URL || '';
+
     const snapshots: SnapshotResponse[] = await Promise.all(
         snapshotRows.map(async (row) => {
-            const viewUrl = await storage.getSignedUrl(row.r2Key, 3600);
+            // Check if URL is fully qualified or needs construction
+            // Note: snapshots stores r2Key.
+            // Construct consistently with cover-image.ts
+            const viewUrl = publicUrlBase
+                ? `${publicUrlBase}/${row.r2Key}`
+                : await storage.getSignedUrl(row.r2Key, 3600); // Fallback if no public URL
+
             return {
                 id: row.id,
                 version: row.version,
@@ -120,9 +128,14 @@ async function handlePost(request: NextRequest, userId: string) {
         ),
     });
 
+    const publicUrlBase = process.env.STORAGE_PUBLIC_URL || '';
+
     if (existingSnapshot) {
         // Return existing snapshot instead of creating duplicate
-        const viewUrl = await storage.getSignedUrl(existingSnapshot.r2Key, 3600);
+        const viewUrl = publicUrlBase
+            ? `${publicUrlBase}/${existingSnapshot.r2Key}`
+            : await storage.getSignedUrl(existingSnapshot.r2Key, 3600);
+
         return success({
             snapshot: {
                 id: existingSnapshot.id,
@@ -199,7 +212,9 @@ async function handlePost(request: NextRequest, userId: string) {
         })
         .where(eq(bookmarks.id, bookmarkId));
 
-    const viewUrl = await storage.getSignedUrl(r2Key, 3600);
+    const viewUrl = publicUrlBase
+        ? `${publicUrlBase}/${r2Key}`
+        : await storage.getSignedUrl(r2Key, 3600);
 
     return created({
         snapshot: {
