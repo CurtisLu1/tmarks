@@ -252,8 +252,8 @@ function TitleOnlyCard({
                 onToggleSelect(bookmark.id)
               }}
               className={`w-5 h-5 rounded flex items-center justify-center transition-all ${isSelected
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-card border-2 border-border hover:border-primary'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-card border-2 border-border hover:border-primary'
                 }`}
               title={isSelected ? '取消选择' : '选择'}
             >
@@ -344,8 +344,8 @@ function TitleOnlyCard({
               )}
             </div>
 
-            {/* 标题和域名容器 - 预留编辑按钮空间 */}
-            <div className="flex-1 min-w-0 flex items-baseline gap-1.5 sm:gap-2 mr-8 sm:mr-10">
+            {/* 标题和域名容器 - 允许换行 */}
+            <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 sm:gap-x-2">
               {/* 标题 */}
               <button
                 type="button"
@@ -363,7 +363,7 @@ function TitleOnlyCard({
                     handleCardClick()
                   }
                 }}
-                className="pointer-events-auto flex-shrink min-w-0 text-left text-xs sm:text-sm font-semibold leading-snug text-foreground truncate hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-md pr-9 sm:pr-12"
+                className="pointer-events-auto text-left text-xs sm:text-sm font-semibold leading-snug text-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-md"
                 title={bookmark.title?.trim() || bookmark.url}
               >
                 {bookmark.title?.trim() || bookmark.url}
