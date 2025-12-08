@@ -75,7 +75,7 @@ export async function processCoverImage(
         });
 
         let storageKey: string;
-        let fileSize = buffer.length;
+        const fileSize = buffer.length;
 
         if (existingImage) {
             console.log(`[CoverImage] Image deduplicated (hash: ${hash})`);
