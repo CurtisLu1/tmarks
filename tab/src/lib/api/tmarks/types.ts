@@ -206,3 +206,32 @@ export interface RateLimitInfo {
   remaining: number;
   reset: number; // Unix timestamp
 }
+
+// ============ 用户偏好设置 ============
+
+export interface UserPreferences {
+  user_id: string;
+  theme: string;
+  page_size: number;
+  view_mode: string;
+  density: string;
+  tag_layout: string;
+  sort_by: string;
+  search_auto_clear_seconds: number;
+  tag_selection_auto_clear_seconds: number;
+  enable_search_auto_clear: boolean;
+  enable_tag_selection_auto_clear: boolean;
+  default_bookmark_icon: string;
+  snapshot_retention_count: number;
+  snapshot_auto_create: boolean;
+  snapshot_auto_dedupe: boolean;
+  snapshot_auto_cleanup_days: number;
+  updated_at: string;
+}
+
+export interface GetPreferencesResponse {
+  data: {
+    preferences: UserPreferences;
+  };
+}
+

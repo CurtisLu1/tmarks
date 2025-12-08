@@ -8,6 +8,7 @@ import type {
   GetUserResponse,
   SearchParams,
   SearchResponse,
+  GetPreferencesResponse,
 } from './types';
 
 export class UserAPI extends TMarksClient {
@@ -17,6 +18,31 @@ export class UserAPI extends TMarksClient {
    */
   async getMe(): Promise<GetUserResponse> {
     return this.get<GetUserResponse>('/me');
+  }
+
+  /**
+   * 获取用户偏好设置
+   * GET /api/v1/preferences
+   */
+  async getPreferences(): Promise<GetPreferencesResponse> {
+    return this.get<GetPreferencesResponse>('/preferences');
+  }
+
+  /**
+   * 获取快照相关设置
+   */
+  async getSnapshotSettings(): Promise<{
+    autoCreate: boolean;
+    autoDedupe: boolean;
+    retentionCount: number;
+  }> {
+    const response = await this.getPreferences();
+    const prefs = response.data.preferences;
+    return {
+      autoCreate: prefs.snapshot_auto_create,
+      autoDedupe: prefs.snapshot_auto_dedupe,
+      retentionCount: prefs.snapshot_retention_count,
+    };
   }
 
   /**
@@ -56,3 +82,4 @@ export class UserAPI extends TMarksClient {
     }
   }
 }
+

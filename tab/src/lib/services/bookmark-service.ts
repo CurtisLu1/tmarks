@@ -1,9 +1,34 @@
 import { db } from '@/lib/db';
 import { bookmarkAPI } from './bookmark-api';
 import { tagRecommender } from './tag-recommender';
+import { snapshotService } from './snapshot-service';
+import { createTMarksClient } from '@/lib/api/tmarks';
+import { StorageService } from '@/lib/utils/storage';
+import { normalizeApiUrl, getTMarksUrls } from '@/lib/constants/urls';
 import type { BookmarkInput, SaveResult } from '@/types';
 
 export class BookmarkService {
+  /**
+   * Check if auto-snapshot is enabled in user preferences
+   */
+  private async shouldAutoSnapshot(): Promise<boolean> {
+    try {
+      const configuredUrl = await StorageService.getBookmarkSiteApiUrl();
+      const apiKey = await StorageService.getBookmarkSiteApiKey();
+
+      if (!apiKey) return false;
+
+      const baseUrl = normalizeApiUrl(configuredUrl || getTMarksUrls().BASE_URL);
+      const client = createTMarksClient({ apiKey, baseUrl });
+
+      const settings = await client.user.getSnapshotSettings();
+      return settings.autoCreate;
+    } catch (error) {
+      console.warn('[BookmarkService] Failed to check auto-snapshot setting:', error);
+      return false;
+    }
+  }
+
   /**
    * Save bookmark to remote and local cache
    */
@@ -31,6 +56,22 @@ export class BookmarkService {
         title: bookmark.title,
         tags: bookmark.tags
       });
+
+      // 5. Auto-capture snapshot if enabled
+      const autoSnapshotEnabled = await this.shouldAutoSnapshot();
+      if (autoSnapshotEnabled && result.id) {
+        console.log('[BookmarkService] Auto-snapshot enabled, capturing...');
+        // Run snapshot capture in background, don't block the save result
+        snapshotService.captureAndUpload(result.id).then((snapshotResult) => {
+          if (snapshotResult.success) {
+            console.log('[BookmarkService] Auto-snapshot captured successfully:', snapshotResult.snapshotId);
+          } else {
+            console.warn('[BookmarkService] Auto-snapshot failed:', snapshotResult.error);
+          }
+        }).catch((error) => {
+          console.warn('[BookmarkService] Auto-snapshot error:', error);
+        });
+      }
 
       return {
         success: true,
@@ -63,6 +104,7 @@ export class BookmarkService {
       throw error;
     }
   }
+
 
   /**
    * Update tag usage counts in cache

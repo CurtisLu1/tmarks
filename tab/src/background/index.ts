@@ -2,6 +2,7 @@ import { cacheManager } from '@/lib/services/cache-manager';
 import { tagRecommender } from '@/lib/services/tag-recommender';
 import { bookmarkService } from '@/lib/services/bookmark-service';
 import { bookmarkAPI } from '@/lib/services/bookmark-api';
+import { snapshotService } from '@/lib/services/snapshot-service';
 import { StorageService } from '@/lib/utils/storage';
 import type { Message, MessageResponse } from '@/types';
 import { TIMEOUTS } from '@/lib/constants/urls';
@@ -225,6 +226,23 @@ async function handleMessage(
       return {
         success: true,
         data: config
+      };
+    }
+
+    case 'CAPTURE_SNAPSHOT': {
+      const { bookmarkId } = message.payload;
+      if (!bookmarkId) {
+        return {
+          success: false,
+          error: 'Bookmark ID is required'
+        };
+      }
+
+      const result = await snapshotService.captureAndUpload(bookmarkId);
+      return {
+        success: result.success,
+        data: result.success ? { snapshotId: result.snapshotId, version: result.version } : undefined,
+        error: result.error
       };
     }
 

@@ -63,8 +63,11 @@ interface AppState {
   // Actions
   extractPageInfo: () => Promise<void>;
   recommendTags: () => Promise<void>;
-  saveBookmark: () => Promise<void>;
+  saveBookmark: () => Promise<string | null>; // Returns bookmark ID if successful
   syncCache: () => Promise<void>;
+
+  // Last saved bookmark ID for snapshot capture
+  lastSavedBookmarkId: string | null;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -85,6 +88,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   isPublic: true,
   includeThumbnail: false,
   config: null,
+  lastSavedBookmarkId: null,
 
   // Setters
   setCurrentPage: (page) =>
@@ -114,12 +118,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     const state = get();
     const nextConfig = state.config
       ? {
-          ...state.config,
-          preferences: {
-            ...state.config.preferences,
-            defaultVisibility
-          }
+        ...state.config,
+        preferences: {
+          ...state.config.preferences,
+          defaultVisibility
         }
+      }
       : state.config;
 
     set({
@@ -130,12 +134,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     const preferencesPayload: UserPreferences = state.config
       ? { ...state.config.preferences, defaultVisibility }
       : {
-          theme: 'auto',
-          autoSync: true,
-          syncInterval: 24,
-          maxSuggestedTags: 5,
-          defaultVisibility
-        };
+        theme: 'auto',
+        autoSync: true,
+        syncInterval: 24,
+        maxSuggestedTags: 5,
+        defaultVisibility
+      };
 
     StorageService.saveConfig({
       preferences: preferencesPayload
@@ -317,17 +321,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
-  saveBookmark: async () => {
+  saveBookmark: async (): Promise<string | null> => {
     const { currentPage, selectedTags, isPublic, includeThumbnail } = get();
 
     if (!currentPage) {
       set({ error: 'No page info available' });
-      return;
+      return null;
     }
 
     if (selectedTags.length === 0) {
       set({ error: 'Please select at least one tag' });
-      return;
+      return null;
     }
 
     const startTime = Date.now();
@@ -356,15 +360,18 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       // Check if save was successful
       if (!result.success) {
-      set({
-        error:
-          `${result.message || result.error || '保存失败'}（耗时 ${formattedSeconds}s）`,
+        set({
+          error:
+            `${result.message || result.error || '保存失败'}（耗时 ${formattedSeconds}s）`,
           isLoading: false,
           isSaving: false,
-        lastSaveDurationMs: elapsedMs
-      });
-        return;
+          lastSaveDurationMs: elapsedMs,
+          lastSavedBookmarkId: null
+        });
+        return null;
       }
+
+      const bookmarkId = result.bookmarkId || null;
 
       let toastMessage: string;
 
@@ -374,7 +381,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           successMessage: toastMessage,
           isLoading: false,
           isSaving: false,
-        lastSaveDurationMs: elapsedMs
+          lastSaveDurationMs: elapsedMs
         });
 
         // Show notification
@@ -390,7 +397,8 @@ export const useAppStore = create<AppState>((set, get) => ({
           successMessage: toastMessage,
           isLoading: false,
           isSaving: false,
-          lastSaveDurationMs: elapsedMs
+          lastSaveDurationMs: elapsedMs,
+          lastSavedBookmarkId: bookmarkId
         });
 
         // Show success notification
@@ -409,6 +417,8 @@ export const useAppStore = create<AppState>((set, get) => ({
           set({ successMessage: null });
         }
       }, 2000);
+
+      return bookmarkId;
     } catch (error) {
       const failureTime = Date.now();
       const elapsedMs = failureTime - startTime;
@@ -419,8 +429,10 @@ export const useAppStore = create<AppState>((set, get) => ({
           `${error instanceof Error ? error.message : 'Failed to save bookmark'}（耗时 ${formattedSeconds}s）`,
         isLoading: false,
         isSaving: false,
-        lastSaveDurationMs: elapsedMs
+        lastSaveDurationMs: elapsedMs,
+        lastSavedBookmarkId: null
       });
+      return null;
     }
   },
 

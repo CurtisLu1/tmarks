@@ -38,7 +38,7 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };
-      
+
       if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
@@ -99,7 +99,7 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
   const handleDelete = async (snapshotId: string, version: number, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation(); // 防止触发查看操作
-    
+
     // 使用更友好的确认方式
     const confirmed = window.confirm(`确定要删除版本 ${version} 的快照吗？\n\n删除后将无法恢复。`);
     if (!confirmed) {
@@ -111,7 +111,7 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };
-      
+
       if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
@@ -127,10 +127,10 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
 
       // 从列表中移除
       setSnapshots(prev => prev.filter(s => s.id !== snapshotId));
-      
+
       // 刷新书签列表（更新快照计数）
       queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] });
-      
+
       addToast('success', '快照已删除');
     } catch (error) {
       console.error('Failed to delete snapshot:', error);
@@ -144,8 +144,8 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
 
   // 使用 Portal 将弹窗渲染到 body，避免被父容器限制
   const modalContent = isOpen ? createPortal(
-    <div 
-      className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4" 
+    <div
+      className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
       style={{ zIndex: 200 }}
       onClick={(e) => {
         e.stopPropagation();
@@ -153,8 +153,8 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
       }}
     >
       {/* 弹窗容器 - 使用和 BookmarkForm 相同的样式 */}
-      <div 
-        className="card w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" 
+      <div
+        className="card w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 头部 */}
@@ -217,8 +217,20 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
                     className="flex-1 flex items-center justify-between gap-3 text-left min-w-0 group/item"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center group-hover/item:scale-110 transition-transform">
-                        <Camera className="w-5 h-5 text-primary" />
+                      <div className="flex-shrink-0 w-16 h-11 rounded-lg bg-muted overflow-hidden group-hover/item:scale-105 transition-transform">
+                        <img
+                          src={snapshot.view_url}
+                          alt={`快照版本 ${snapshot.version}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback to camera icon on error
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <div className="hidden w-full h-full flex items-center justify-center">
+                          <Camera className="w-5 h-5 text-muted-foreground" />
+                        </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         {/* 快照标题（如果有） */}
@@ -227,7 +239,7 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
                             {snapshot.snapshot_title}
                           </div>
                         )}
-                        
+
                         {/* 版本号 */}
                         <div className="flex items-center gap-2 text-xs text-foreground/80">
                           <span className="font-medium">版本 {snapshot.version}</span>
@@ -238,22 +250,22 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
                             </>
                           )}
                         </div>
-                        
+
                         {/* 时间 - 相对时间 + 绝对时间 */}
                         <div className="text-xs text-muted-foreground mt-0.5">
-                          {formatDistanceToNow(new Date(snapshot.created_at), { 
-                            addSuffix: true, 
-                            locale: zhCN 
+                          {formatDistanceToNow(new Date(snapshot.created_at), {
+                            addSuffix: true,
+                            locale: zhCN
                           })}
                           <span className="mx-1">•</span>
                           {format(new Date(snapshot.created_at), 'yyyy-MM-dd HH:mm', { locale: zhCN })}
                         </div>
                       </div>
                     </div>
-                    
+
                     <ExternalLink className="w-4 h-4 text-muted-foreground group-hover/item:text-primary group-hover/item:scale-110 transition-all flex-shrink-0" />
                   </button>
-                  
+
                   <button
                     onClick={(e) => handleDelete(snapshot.id, snapshot.version, e)}
                     disabled={deletingId === snapshot.id}

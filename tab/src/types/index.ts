@@ -227,9 +227,11 @@ export type MessageType =
   | 'EXTRACT_PAGE_INFO'
   | 'RECOMMEND_TAGS'
   | 'SAVE_BOOKMARK'
+  | 'CAPTURE_SNAPSHOT'
   | 'SYNC_CACHE'
   | 'GET_CONFIG'
   | 'GET_EXISTING_TAGS';
+
 
 export interface Message<T = any> {
   type: MessageType;
