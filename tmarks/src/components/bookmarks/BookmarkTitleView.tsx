@@ -344,8 +344,8 @@ function TitleOnlyCard({
               )}
             </div>
 
-            {/* 标题和域名容器 - 允许换行 */}
-            <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 sm:gap-x-2">
+            {/* 标题和域名容器 - 允许换行，预留编辑按钮空间 */}
+            <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 sm:gap-x-2 mr-8 sm:mr-10">
               {/* 标题 */}
               <button
                 type="button"
