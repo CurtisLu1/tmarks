@@ -160,7 +160,7 @@ html {
   width: 100%;
   padding: 0.875rem 1.25rem;
   border-radius: var(--radius);
-  background: var(--input);
+  background: var(--muted);
   backdrop-filter: blur(10px);
   border: 2px solid var(--border);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -264,6 +264,7 @@ select.input option {
   0% {
     background-position: 0px 0px;
   }
+
   100% {
     background-position: 12px 0px;
   }
@@ -273,6 +274,7 @@ select.input option {
   0% {
     background-position: 0px 0px;
   }
+
   100% {
     background-position: 0px 12px;
   }
@@ -282,6 +284,7 @@ select.input option {
   0% {
     background-position: 0px 0px;
   }
+
   100% {
     background-position: -12px 0px;
   }
@@ -291,6 +294,7 @@ select.input option {
   0% {
     background-position: 0px 0px;
   }
+
   100% {
     background-position: 0px -12px;
   }
@@ -302,6 +306,7 @@ select.input option {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -309,10 +314,14 @@ select.input option {
 }
 
 @keyframes bookmark-dot-bounce {
-  0%, 80%, 100% {
+
+  0%,
+  80%,
+  100% {
     transform: translateY(0) scale(1);
     opacity: 0.5;
   }
+
   40% {
     transform: translateY(-8px) scale(1.2);
     opacity: 1;
@@ -328,6 +337,7 @@ select.input option {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -343,6 +353,7 @@ select.input option {
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -359,7 +370,8 @@ select.input option {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 200; /* 使用统一的模态框层级 */
+  z-index: 200;
+  /* 使用统一的模态框层级 */
   padding: 1rem;
   background: transparent;
   border: none;
@@ -392,6 +404,7 @@ select.input option {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
