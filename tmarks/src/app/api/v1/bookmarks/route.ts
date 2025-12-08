@@ -121,12 +121,12 @@ async function fetchBookmarks(userId: string, query: BookmarkListQuery) {
     query.pinned ? eq(bookmarks.isPinned, true) : undefined,
     query.keyword
       ? or(
-          ilike(bookmarks.title, `%${query.keyword}%`),
-          ilike(bookmarks.url, `%${query.keyword}%`),
-          ilike(bookmarks.description, `%${query.keyword}%`),
-        )
+        ilike(bookmarks.title, `%${query.keyword}%`),
+        ilike(bookmarks.url, `%${query.keyword}%`),
+        ilike(bookmarks.description, `%${query.keyword}%`),
+      )
       : undefined,
-    query.pageCursor ? lt(bookmarks.id, query.pageCursor) : undefined,
+    query.pageCursor ? lt(bookmarks.createdAt, query.pageCursor) : undefined,
   ];
 
   const orderBy = getOrderBy(query.sort);
@@ -243,7 +243,7 @@ async function fetchBookmarks(userId: string, query: BookmarkListQuery) {
     meta: {
       page_size: query.pageSize,
       count: data.length,
-      next_cursor: hasMore ? idRows[query.pageSize]?.id ?? null : null,
+      next_cursor: hasMore ? idRows[query.pageSize]?.createdAt ?? null : null,
       has_more: hasMore,
     },
   };
