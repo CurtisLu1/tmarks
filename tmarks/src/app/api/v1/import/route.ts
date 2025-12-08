@@ -52,42 +52,88 @@ async function upsertTags(userId: string, incoming: ExportTag[]): Promise<Map<st
   return idMap;
 }
 
-async function upsertBookmarks(userId: string, incoming: ExportBookmark[], tagMap: Map<string, string>) {
-  for (const b of incoming) {
-    const bookmarkId = sanitizeId(b.id) || crypto.randomUUID();
-    await db
-      .insert(bookmarks)
-      .values({
-        id: bookmarkId,
-        userId,
-        title: b.title,
-        url: b.url,
-        description: b.description ?? null,
-        coverImage: b.cover_image ?? null,
-        favicon: b.favicon ?? null,
-        isPinned: Boolean(b.is_pinned),
-        isArchived: Boolean(b.is_archived),
-        isPublic: Boolean(b.is_public),
-        clickCount: b.click_count ?? 0,
-        lastClickedAt: b.last_clicked_at ?? null,
-        hasSnapshot: Boolean(b.snapshot_count && b.snapshot_count > 0),
-        snapshotCount: b.snapshot_count ?? 0,
-        createdAt: b.created_at ?? new Date().toISOString(),
-        updatedAt: b.updated_at ?? new Date().toISOString(),
-      })
-      .onConflictDoNothing({ target: bookmarks.id });
+async function upsertBookmarks(
+  userId: string,
+  incoming: ExportBookmark[],
+  tagMap: Map<string, string>,
+  options?: { skip_duplicates?: boolean }
+): Promise<{ inserted: number; skipped: number; failed: number }> {
+  const skipDuplicates = options?.skip_duplicates ?? true;
+  let inserted = 0;
+  let skipped = 0;
+  let failed = 0;
 
-    if (b.tags?.length) {
-      for (const sourceTagId of b.tags) {
-        const tagId = tagMap.get(sourceTagId);
-        if (!tagId) continue;
-        await db
-          .insert(bookmarkTags)
-          .values({ bookmarkId, tagId, userId, createdAt: new Date().toISOString() })
-          .onConflictDoNothing({ target: [bookmarkTags.bookmarkId, bookmarkTags.tagId] });
+  // Deduplicate by URL within the import file - keep first occurrence
+  const seenUrls = new Set<string>();
+  const deduped = incoming.filter((b) => {
+    if (seenUrls.has(b.url)) {
+      skipped++;
+      return false;
+    }
+    seenUrls.add(b.url);
+    return true;
+  });
+
+  for (const b of deduped) {
+    const bookmarkId = sanitizeId(b.id) || crypto.randomUUID();
+    try {
+      const result = await db
+        .insert(bookmarks)
+        .values({
+          id: bookmarkId,
+          userId,
+          title: b.title,
+          url: b.url,
+          description: b.description ?? null,
+          coverImage: b.cover_image ?? null,
+          favicon: b.favicon ?? null,
+          isPinned: Boolean(b.is_pinned),
+          isArchived: Boolean(b.is_archived),
+          isPublic: Boolean(b.is_public),
+          clickCount: b.click_count ?? 0,
+          lastClickedAt: b.last_clicked_at ?? null,
+          hasSnapshot: Boolean(b.snapshot_count && b.snapshot_count > 0),
+          snapshotCount: b.snapshot_count ?? 0,
+          createdAt: b.created_at ?? new Date().toISOString(),
+          updatedAt: b.updated_at ?? new Date().toISOString(),
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      if (result.length === 0) {
+        // Conflict occurred (duplicate URL in database)
+        if (skipDuplicates) {
+          skipped++;
+          continue;
+        } else {
+          failed++;
+          throw new Error(`Duplicate URL: ${b.url}`);
+        }
       }
+
+      inserted++;
+
+      if (b.tags?.length) {
+        for (const sourceTagId of b.tags) {
+          const tagId = tagMap.get(sourceTagId);
+          if (!tagId) continue;
+          await db
+            .insert(bookmarkTags)
+            .values({ bookmarkId, tagId, userId, createdAt: new Date().toISOString() })
+            .onConflictDoNothing({ target: [bookmarkTags.bookmarkId, bookmarkTags.tagId] });
+        }
+      }
+    } catch (error) {
+      if (skipDuplicates) {
+        skipped++;
+        continue;
+      }
+      failed++;
+      throw error;
     }
   }
+
+  return { inserted, skipped, failed };
 }
 
 async function upsertTabGroups(userId: string, incoming: ExportTabGroup[]) {
@@ -208,13 +254,13 @@ async function handler(request: NextRequest, userId: string) {
   };
 
   const tagMap = await upsertTags(userId, body.tags ?? []);
-  await upsertBookmarks(userId, body.bookmarks ?? [], tagMap);
+  const bookmarkResult = await upsertBookmarks(userId, body.bookmarks ?? [], tagMap, payload.options);
   await upsertTabGroups(userId, body.tab_groups ?? []);
 
   const response: ImportResponse = {
-    success: result.bookmarks,
-    failed: 0,
-    skipped: 0,
+    success: bookmarkResult.inserted,
+    failed: bookmarkResult.failed,
+    skipped: bookmarkResult.skipped,
     total: result.bookmarks,
     errors: [],
     created_bookmarks: [],
