@@ -31,7 +31,7 @@ export function BookmarkForm({ bookmark, onClose, onSuccess }: BookmarkFormProps
   const [urlWarning, setUrlWarning] = useState<{ exists: true; bookmark: Bookmark } | null>(null)
   const [checkingUrl, setCheckingUrl] = useState(false)
 
-    const createBookmark = useCreateBookmark()
+  const createBookmark = useCreateBookmark()
   const updateBookmark = useUpdateBookmark()
   const deleteBookmark = useDeleteBookmark()
   const createTag = useCreateTag()
@@ -402,7 +402,7 @@ export function BookmarkForm({ bookmark, onClose, onSuccess }: BookmarkFormProps
                         key={tag.id}
                         type="button"
                         onClick={() => toggleTag(tag.id)}
-                        className="text-xs px-2.5 py-1 rounded-full bg-primary text-primary-content hover:bg-primary/90 transition-colors shadow-sm"
+                        className="text-xs px-2.5 py-1 rounded-full bg-card border border-border text-foreground hover:border-primary/50 hover:bg-primary/5 transition-colors shadow-sm"
                         disabled={isPending}
                       >
                         {tag.name} ×
@@ -462,15 +462,15 @@ export function BookmarkForm({ bookmark, onClose, onSuccess }: BookmarkFormProps
                 <span className="text-xs text-foreground">归档</span>
               </label>
 
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isPublic}
-                onChange={(e) => setIsPublic(e.target.checked)}
-                disabled={isPending}
-              />
-              <span className="text-xs text-foreground">公开分享</span>
-            </label>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                  disabled={isPending}
+                />
+                <span className="text-xs text-foreground">公开分享</span>
+              </label>
             </div>
 
             {/* 按钮 */}

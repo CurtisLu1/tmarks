@@ -120,9 +120,10 @@ async function handlePost(request: NextRequest, userId: string) {
   const body = (await request.json()) as CreateTabGroupRequest;
 
   const isFolder = Boolean(body.is_folder);
-  if (!isFolder && (!body.items || body.items.length === 0)) {
-    return badRequest('At least one tab item is required for non-folder groups');
-  }
+  // Allow empty groups
+  // if (!isFolder && (!body.items || body.items.length === 0)) {
+  //   return badRequest('At least one tab item is required for non-folder groups');
+  // }
 
   const now = new Date();
   const title =

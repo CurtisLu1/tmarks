@@ -160,7 +160,7 @@ html {
   width: 100%;
   padding: 0.875rem 1.25rem;
   border-radius: var(--radius);
-  background: var(--muted);
+  background: var(--card);
   backdrop-filter: blur(10px);
   border: 2px solid var(--border);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
