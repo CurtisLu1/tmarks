@@ -21,21 +21,23 @@ export class CacheManager {
       console.log(`[CacheManager] Synced ${tags.length} tags`);
 
       // 2. Fetch and cache bookmarks (paginated)
-      let page = 1;
+      let cursor: string | undefined = undefined;
       let totalBookmarks = 0;
+      let loopCount = 0;
       await db.bookmarks.clear();
 
-      while (page <= PAGINATION.MAX_PAGES) { // Safety limit
-        const { bookmarks, hasMore } = await bookmarkAPI.getBookmarks(page, PAGINATION.DEFAULT_PAGE_SIZE);
+      while (loopCount < PAGINATION.MAX_PAGES) { // Safety limit
+        const { bookmarks, hasMore, nextCursor } = await bookmarkAPI.getBookmarks(cursor, PAGINATION.DEFAULT_PAGE_SIZE);
 
         if (bookmarks.length > 0) {
           await db.bookmarks.bulkAdd(bookmarks);
           totalBookmarks += bookmarks.length;
-          console.log(`[CacheManager] Synced page ${page}: ${bookmarks.length} bookmarks`);
+          console.log(`[CacheManager] Synced batch ${loopCount + 1}: ${bookmarks.length} bookmarks`);
         }
 
-        if (!hasMore) break;
-        page++;
+        if (!hasMore || !nextCursor) break;
+        cursor = nextCursor;
+        loopCount++;
       }
 
       // 3. Update metadata

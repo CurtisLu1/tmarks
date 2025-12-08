@@ -46,7 +46,7 @@ export class BookmarkAPIClient {
     return this.client;
   }
 
-  
+
   /**
    * Get all tags from bookmark site
    */
@@ -82,20 +82,24 @@ export class BookmarkAPIClient {
   /**
    * Get bookmarks with pagination
    */
-  async getBookmarks(page: number = 1, limit: number = 100): Promise<{
+  /**
+   * Get bookmarks with pagination
+   */
+  async getBookmarks(cursor?: string, limit: number = 100): Promise<{
     bookmarks: Bookmark[];
     hasMore: boolean;
+    nextCursor?: string | null;
   }> {
     const client = await this.ensureClient();
 
     try {
       const response = await client.bookmarks.getBookmarks({
         page_size: limit,
-        page_cursor: page > 1 ? `page_${page}` : undefined
+        page_cursor: cursor
       });
 
       if (!response.data.bookmarks.length) {
-        return { bookmarks: [], hasMore: false };
+        return { bookmarks: [], hasMore: false, nextCursor: null };
       }
 
       // Convert TMarks API format to internal format
@@ -111,7 +115,8 @@ export class BookmarkAPIClient {
 
       return {
         bookmarks,
-        hasMore: response.data.meta.has_more
+        hasMore: response.data.meta.has_more,
+        nextCursor: response.data.meta.next_cursor
       };
     } catch (error: any) {
       throw new AppError(
