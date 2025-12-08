@@ -59,7 +59,7 @@ export function BatchActionBar({
     try {
       await batchAction.mutateAsync({
         action,
-        bookmark_ids: selectedIds,
+        ids: selectedIds,
       })
       onClearSelection()
       onSuccess?.()
@@ -119,7 +119,7 @@ export function BatchActionBar({
     try {
       await batchAction.mutateAsync({
         action: 'update_tags',
-        bookmark_ids: selectedIds,
+        ids: selectedIds,
         add_tag_ids: mode === 'add' ? selectedTagIds : undefined,
         remove_tag_ids: mode === 'remove' ? selectedTagIds : undefined,
       })

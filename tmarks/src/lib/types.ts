@@ -181,42 +181,42 @@ export interface UpdatePreferencesRequest {
   density?: 'compact' | 'normal' | 'comfortable'
   tag_layout?: TagLayoutPreference
   sort_by?: SortByPreference
-  
+
   // 1. 搜索和筛选相关
   search_auto_clear_seconds?: number
   tag_selection_auto_clear_seconds?: number
   enable_search_auto_clear?: boolean
   enable_tag_selection_auto_clear?: boolean
   search_debounce_ms?: number
-  
+
   // 2. 编辑和交互相关
   mobile_edit_auto_cancel_seconds?: number
   double_click_delay_ms?: number
   enable_edit_confirmation?: boolean
-  
+
   // 3. 默认书签图标
   default_bookmark_icon?: DefaultBookmarkIcon
-  
+
   // 4. 快照设置
   snapshot_retention_count?: number
   snapshot_auto_create?: boolean
   snapshot_auto_dedupe?: boolean
   snapshot_auto_cleanup_days?: number
-  
+
   // 5. 动画和性能相关
   enable_animations?: boolean
   animation_speed?: 'fast' | 'normal' | 'slow'
   enable_virtual_scroll?: boolean
-  
+
   // 6. 通知和提示相关
   toast_duration_seconds?: number
   enable_success_sound?: boolean
   auto_copy_share_link?: boolean
-  
+
   // 7. 自动保存和同步相关
   auto_save_delay_seconds?: number
   warn_unsaved_changes?: boolean
-  
+
   // 6. 显示和布局相关
   show_bookmark_thumbnails?: boolean
   show_bookmark_descriptions?: boolean
@@ -306,7 +306,7 @@ export type BatchActionType = 'delete' | 'update_tags' | 'pin' | 'unpin' | 'arch
 
 export interface BatchActionRequest {
   action: BatchActionType
-  bookmark_ids: string[]
+  ids: string[]
   add_tag_ids?: string[]
   remove_tag_ids?: string[]
 }
