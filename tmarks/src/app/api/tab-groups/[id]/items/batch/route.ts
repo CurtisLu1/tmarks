@@ -6,6 +6,7 @@ import { withAuth } from '@/lib/api/middleware/auth';
 import { db } from '@/lib/db';
 import { tabGroups, tabGroupItems } from '@/lib/db/schema';
 import { sanitizeString, isValidUrl } from '@/lib/validation';
+import { incrementStatistic } from '@/lib/statistics';
 
 interface BatchAddItem {
     title: string;
@@ -105,6 +106,11 @@ async function handlePost(request: NextRequest, userId: string) {
     const allItems = await db.query.tabGroupItems.findMany({
         where: eq(tabGroupItems.groupId, groupId),
     });
+
+    // Track statistics
+    if (addedItems.length > 0) {
+        await incrementStatistic(userId, 'itemsAdded', addedItems.length);
+    }
 
     return success({
         message: 'Items added successfully',

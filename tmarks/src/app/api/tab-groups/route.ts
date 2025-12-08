@@ -7,6 +7,7 @@ import { db } from '@/lib/db';
 import { tabGroupItems, tabGroups } from '@/lib/db/schema';
 import { generateUUID } from '@/lib/crypto';
 import { sanitizeString } from '@/lib/validation';
+import { incrementStatistics } from '@/lib/statistics';
 import type { TabGroup } from '@/lib/types';
 
 interface CreateTabGroupRequest {
@@ -168,6 +169,12 @@ async function handlePost(request: NextRequest, userId: string) {
     .from(tabGroupItems)
     .where(eq(tabGroupItems.groupId, groupId))
     .orderBy(tabGroupItems.position);
+
+  // Track statistics
+  await incrementStatistics(userId, {
+    groupsCreated: 1,
+    itemsAdded: savedItems.length,
+  });
 
   return created({
     tab_group: toApiGroup(

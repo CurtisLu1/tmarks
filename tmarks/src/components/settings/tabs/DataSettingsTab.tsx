@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Database, Download, Upload, FileJson, FileCode, Camera, Trash2 } from 'lucide-react'
+import { Database, Download, Upload, FileJson, FileCode, Camera, Trash2, AlertTriangle } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { ExportSection } from '@/components/import-export/ExportSection'
 import { ImportSection } from '@/components/import-export/ImportSection'
@@ -17,11 +17,13 @@ export function DataSettingsTab() {
   const { data: r2Quota, isLoading: isLoadingR2Quota } = useR2StorageQuota()
   const [activeTab, setActiveTab] = useState<'export' | 'import'>('export')
   const [lastOperation, setLastOperation] = useState<{
-    type: 'export' | 'import' | 'cleanup'
+    type: 'export' | 'import' | 'cleanup' | 'delete-all'
     timestamp: string
     details: string
   } | null>(null)
   const [isCleaningSnapshots, setIsCleaningSnapshots] = useState(false)
+  const [isDeletingAll, setIsDeletingAll] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
   // 处理导出完成
   const handleExportComplete = (format: ExportFormat, options: ExportOptions) => {
@@ -66,7 +68,7 @@ export function DataSettingsTab() {
 
       const data = await response.json()
       const bookmarks = data.data?.bookmarks || []
-      
+
       let totalCleaned = 0
       let processedCount = 0
 
@@ -115,6 +117,49 @@ export function DataSettingsTab() {
     }
   }
 
+  // 删除所有数据
+  const handleDeleteAllData = async () => {
+    if (deleteConfirmText !== 'DELETE ALL MY DATA') {
+      addToast('error', '请输入正确的确认文本')
+      return
+    }
+
+    setIsDeletingAll(true)
+    try {
+      const response = await fetch('/api/v1/settings/delete-all', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ confirm_text: deleteConfirmText }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || '删除失败')
+      }
+
+      setLastOperation({
+        type: 'delete-all',
+        timestamp: new Date().toLocaleString(),
+        details: '已删除所有数据'
+      })
+
+      addToast('success', '所有数据已删除')
+      setDeleteConfirmText('')
+
+      // 刷新所有缓存
+      queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: [TAGS_QUERY_KEY] })
+    } catch (error) {
+      console.error('删除所有数据失败:', error)
+      addToast('error', '删除失败，请重试')
+    } finally {
+      setIsDeletingAll(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* 对象存储使用情况 */}
@@ -157,22 +202,20 @@ export function DataSettingsTab() {
         <div className="flex gap-2 border-b border-border">
           <button
             onClick={() => setActiveTab('export')}
-            className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
-              activeTab === 'export'
+            className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'export'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             <Download className="w-4 h-4" />
             导出数据
           </button>
           <button
             onClick={() => setActiveTab('import')}
-            className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
-              activeTab === 'import'
+            className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'import'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             <Upload className="w-4 h-4" />
             导入数据
@@ -194,17 +237,20 @@ export function DataSettingsTab() {
         {lastOperation && (
           <div className="p-4 rounded-lg border border-border bg-card">
             <div className="flex items-start gap-3">
-              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                lastOperation.type === 'export'
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${lastOperation.type === 'export'
                   ? 'bg-primary/10 text-primary'
                   : lastOperation.type === 'import'
-                  ? 'bg-success/10 text-success'
-                  : 'bg-warning/10 text-warning'
-              }`}>
+                    ? 'bg-success/10 text-success'
+                    : lastOperation.type === 'delete-all'
+                      ? 'bg-destructive/10 text-destructive'
+                      : 'bg-warning/10 text-warning'
+                }`}>
                 {lastOperation.type === 'export' ? (
                   <Download className="w-4 h-4" />
                 ) : lastOperation.type === 'import' ? (
                   <Upload className="w-4 h-4" />
+                ) : lastOperation.type === 'delete-all' ? (
+                  <AlertTriangle className="w-4 h-4" />
                 ) : (
                   <Trash2 className="w-4 h-4" />
                 )}
@@ -212,7 +258,7 @@ export function DataSettingsTab() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-foreground text-sm">
-                    {lastOperation.type === 'export' ? '数据导出' : lastOperation.type === 'import' ? '数据导入' : '快照清理'}
+                    {lastOperation.type === 'export' ? '数据导出' : lastOperation.type === 'import' ? '数据导入' : lastOperation.type === 'delete-all' ? '数据清空' : '快照清理'}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {lastOperation.timestamp}
@@ -340,6 +386,57 @@ export function DataSettingsTab() {
         </div>
       </div>
 
+      <div className="border-t border-border"></div>
+
+      {/* 危险区域 - 删除所有数据 */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-destructive" />
+          <div>
+            <h3 className="text-lg font-semibold text-destructive">危险区域</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              以下操作不可逆，请谨慎操作
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-lg border-2 border-destructive/50 bg-destructive/5">
+          <div className="flex items-start gap-3">
+            <Trash2 className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <div className="text-sm font-medium mb-1 text-destructive">删除所有数据</div>
+              <div className="text-xs text-muted-foreground space-y-1 mb-3">
+                <div>• 删除所有书签、标签、标签页组</div>
+                <div>• 删除所有快照和封面图</div>
+                <div>• 删除分享链接和统计数据</div>
+                <div>• <strong>此操作不可撤销！</strong></div>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">
+                    请输入 <code className="bg-muted px-1 py-0.5 rounded text-destructive font-mono">DELETE ALL MY DATA</code> 确认
+                  </label>
+                  <input
+                    type="text"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="输入确认文本"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-destructive/50"
+                  />
+                </div>
+                <button
+                  onClick={handleDeleteAllData}
+                  disabled={isDeletingAll || deleteConfirmText !== 'DELETE ALL MY DATA'}
+                  className="btn btn-sm flex items-center gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {isDeletingAll ? '删除中...' : '删除所有数据'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   )

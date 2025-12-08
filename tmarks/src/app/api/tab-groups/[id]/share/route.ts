@@ -6,6 +6,7 @@ import { withErrorHandling } from '@/lib/api/error-handler';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { db } from '@/lib/db';
 import { tabGroups, shares } from '@/lib/db/schema';
+import { incrementStatistic } from '@/lib/statistics';
 
 function getGroupId(request: NextRequest): string {
     const segments = request.nextUrl.pathname.split('/');
@@ -76,6 +77,9 @@ async function handlePost(request: NextRequest, userId: string) {
     if (!newShare) {
         return notFound('Failed to create share');
     }
+
+    // Track statistics
+    await incrementStatistic(userId, 'sharesCreated', 1);
 
     return success({
         share: {

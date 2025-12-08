@@ -6,6 +6,7 @@ import { withErrorHandling } from '@/lib/api/error-handler';
 import { db } from '@/lib/db';
 import { tabGroupItems, tabGroups } from '@/lib/db/schema';
 import { sanitizeString } from '@/lib/validation';
+import { incrementStatistics } from '@/lib/statistics';
 import type { TabGroup } from '@/lib/types';
 
 interface UpdateTabGroupRequest {
@@ -126,11 +127,18 @@ async function handleDelete(userId: string, groupId: string) {
   const existing = await loadGroup(userId, groupId);
   if (!existing) return notFound('Tab group not found');
 
+  const itemCount = existing.item_count;
   const now = new Date().toISOString();
   await db
     .update(tabGroups)
     .set({ isDeleted: true, deletedAt: now, updatedAt: now })
     .where(and(eq(tabGroups.id, groupId), eq(tabGroups.userId, userId)));
+
+  // Track statistics
+  await incrementStatistics(userId, {
+    groupsDeleted: 1,
+    itemsDeleted: itemCount,
+  });
 
   return noContent();
 }
