@@ -344,8 +344,8 @@ function TitleOnlyCard({
               )}
             </div>
 
-            {/* 标题和域名容器 - 允许换行，预留编辑按钮空间 */}
-            <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 sm:gap-x-2 mr-8 sm:mr-10">
+            {/* 标题和域名容器 - 强制换行，预留编辑按钮空间 */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5 mr-8 sm:mr-10">
               {/* 标题 */}
               <button
                 type="button"
@@ -374,7 +374,7 @@ function TitleOnlyCard({
                 href={bookmark.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="pointer-events-auto flex-shrink-0 text-[10px] sm:text-xs text-muted-foreground/60 hover:text-primary transition-colors truncate max-w-[40%]"
+                className="pointer-events-auto flex-shrink-0 text-[10px] sm:text-xs text-muted-foreground/60 hover:text-primary transition-colors truncate"
                 onClick={(e) => {
                   if (batchMode) {
                     e.preventDefault()
