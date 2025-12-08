@@ -64,7 +64,7 @@ export class SnapshotService {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${apiKey}`,
+                    'X-API-Key': apiKey,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
