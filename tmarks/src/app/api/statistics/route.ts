@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
-import { and, eq, sql, isNull } from 'drizzle-orm';
+import { and, eq, sql, isNull, isNotNull, desc } from 'drizzle-orm';
 import { success } from '@/lib/api/response';
 import { withErrorHandling } from '@/lib/api/error-handler';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { db } from '@/lib/db';
-import { statistics, tabGroups, tabGroupItems, bookmarks, tags } from '@/lib/db/schema';
+import { statistics, tabGroups, tabGroupItems, shares } from '@/lib/db/schema';
 
 async function handleGet(request: NextRequest, userId: string) {
     const daysParam = request.nextUrl.searchParams.get('days');
@@ -14,7 +14,7 @@ async function handleGet(request: NextRequest, userId: string) {
     startDate.setDate(startDate.getDate() - days);
     const startDateStr = startDate.toISOString().split('T')[0];
 
-    // Get statistics from the statistics table
+    // Get statistics from the statistics table for trends
     const stats = await db.query.statistics.findMany({
         where: and(
             eq(statistics.userId, userId),
@@ -23,72 +23,105 @@ async function handleGet(request: NextRequest, userId: string) {
         orderBy: [sql`${statistics.statDate} ASC`],
     });
 
-    // Get current tab group counts
+    // Get current tab group counts (non-deleted)
     const [groupsCount] = await db
         .select({ count: sql<number>`count(*)` })
         .from(tabGroups)
         .where(and(eq(tabGroups.userId, userId), isNull(tabGroups.deletedAt)));
 
+    // Get deleted tab group counts
+    const [deletedGroupsCount] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(tabGroups)
+        .where(and(eq(tabGroups.userId, userId), isNotNull(tabGroups.deletedAt)));
+
+    // Get total items count
     const [itemsCount] = await db
         .select({ count: sql<number>`count(*)` })
         .from(tabGroupItems)
         .innerJoin(tabGroups, eq(tabGroups.id, tabGroupItems.groupId))
         .where(and(eq(tabGroups.userId, userId), isNull(tabGroups.deletedAt)));
 
-    // Get current bookmark counts
-    const [bookmarksCount] = await db
+    // Get shares count
+    const [sharesCount] = await db
         .select({ count: sql<number>`count(*)` })
-        .from(bookmarks)
-        .where(and(eq(bookmarks.userId, userId), isNull(bookmarks.deletedAt)));
+        .from(shares)
+        .where(eq(shares.userId, userId));
 
-    // Get total click count
-    const [clicksCount] = await db
-        .select({ total: sql<number>`COALESCE(SUM(${bookmarks.clickCount}), 0)` })
-        .from(bookmarks)
-        .where(and(eq(bookmarks.userId, userId), isNull(bookmarks.deletedAt)));
+    // Get top domains from tab items
+    const topDomains = await db
+        .select({
+            domain: sql<string>`
+                CASE 
+                    WHEN ${tabGroupItems.url} LIKE 'http://%' OR ${tabGroupItems.url} LIKE 'https://%'
+                    THEN split_part(split_part(${tabGroupItems.url}, '://', 2), '/', 1)
+                    ELSE split_part(${tabGroupItems.url}, '/', 1)
+                END
+            `,
+            count: sql<number>`count(*)`,
+        })
+        .from(tabGroupItems)
+        .innerJoin(tabGroups, eq(tabGroups.id, tabGroupItems.groupId))
+        .where(and(eq(tabGroups.userId, userId), isNull(tabGroups.deletedAt)))
+        .groupBy(sql`1`)
+        .orderBy(desc(sql`count(*)`))
+        .limit(10);
 
-    // Get current tag counts
-    const [tagsCount] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(tags)
-        .where(and(eq(tags.userId, userId), isNull(tags.deletedAt)));
+    // Get group size distribution
+    const groupSizes = await db
+        .select({
+            groupId: tabGroupItems.groupId,
+            count: sql<number>`count(*)`,
+        })
+        .from(tabGroupItems)
+        .innerJoin(tabGroups, eq(tabGroups.id, tabGroupItems.groupId))
+        .where(and(eq(tabGroups.userId, userId), isNull(tabGroups.deletedAt)))
+        .groupBy(tabGroupItems.groupId);
 
-    // Aggregate daily stats
-    const dailyStats = stats.map((s) => ({
+    // Calculate size distribution
+    const sizeRanges = [
+        { range: '1-5', min: 1, max: 5 },
+        { range: '6-10', min: 6, max: 10 },
+        { range: '11-20', min: 11, max: 20 },
+        { range: '21-50', min: 21, max: 50 },
+        { range: '50+', min: 51, max: Infinity },
+    ];
+
+    const groupSizeDistribution = sizeRanges.map(({ range, min, max }) => ({
+        range,
+        count: groupSizes.filter((g) => g.count >= min && g.count <= max).length,
+    })).filter(d => d.count > 0);
+
+    // Build trends data
+    const groupsTrend = stats.map((s) => ({
         date: s.statDate,
-        groups_created: s.groupsCreated ?? 0,
-        groups_deleted: s.groupsDeleted ?? 0,
-        items_added: s.itemsAdded ?? 0,
-        items_deleted: s.itemsDeleted ?? 0,
-        shares_created: s.sharesCreated ?? 0,
+        count: s.groupsCreated ?? 0,
     }));
 
-    // Calculate totals
-    const totals = {
-        total_bookmarks: Number(bookmarksCount?.count ?? 0),
-        total_clicks: Number(clicksCount?.total ?? 0),
-        total_tags: Number(tagsCount?.count ?? 0),
-        total_groups: Number(groupsCount?.count ?? 0),
-        total_items: Number(itemsCount?.count ?? 0),
-        groups_created: stats.reduce((sum, s) => sum + (s.groupsCreated ?? 0), 0),
-        groups_deleted: stats.reduce((sum, s) => sum + (s.groupsDeleted ?? 0), 0),
-        items_added: stats.reduce((sum, s) => sum + (s.itemsAdded ?? 0), 0),
-        items_deleted: stats.reduce((sum, s) => sum + (s.itemsDeleted ?? 0), 0),
-        shares_created: stats.reduce((sum, s) => sum + (s.sharesCreated ?? 0), 0),
-    };
+    const itemsTrend = stats.map((s) => ({
+        date: s.statDate,
+        count: s.itemsAdded ?? 0,
+    }));
 
     return success({
-        period: {
-            days,
-            start_date: startDateStr,
-            end_date: new Date().toISOString().split('T')[0],
+        summary: {
+            total_groups: Number(groupsCount?.count ?? 0),
+            total_deleted_groups: Number(deletedGroupsCount?.count ?? 0),
+            total_items: Number(itemsCount?.count ?? 0),
+            total_shares: Number(sharesCount?.count ?? 0),
         },
-        totals,
-        daily: dailyStats,
+        trends: {
+            groups: groupsTrend,
+            items: itemsTrend,
+        },
+        top_domains: topDomains.map((d) => ({
+            domain: d.domain || 'unknown',
+            count: Number(d.count),
+        })),
+        group_size_distribution: groupSizeDistribution,
     });
 }
 
 export const GET = withErrorHandling(
     withAuth(async (request, ctx) => handleGet(request, ctx.userId))
 );
-
