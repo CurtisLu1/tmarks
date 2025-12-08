@@ -11,8 +11,9 @@ export interface JWTPayload {
 export function parseExpiry(expiry: string): number {
   const match = expiry.match(/^(\d+)([smhd])$/);
   if (!match) throw new Error('Invalid expiry format');
-  const value = Number.parseInt(match[1], 10);
-  const unit = match[2];
+  const [, rawValue, unit] = match;
+  if (!rawValue || !unit) throw new Error('Invalid expiry format');
+  const value = Number.parseInt(rawValue, 10);
   if (Number.isNaN(value)) throw new Error('Invalid expiry format');
   switch (unit) {
     case 's':

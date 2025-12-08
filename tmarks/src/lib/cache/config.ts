@@ -1,12 +1,12 @@
-import type { CacheConfig, CacheStrategyType } from './types';
+import type { CacheConfig, CacheStrategyType, CacheTtlConfig } from './types';
 
-const DEFAULT_TTL = {
+const DEFAULT_TTL: CacheTtlConfig = {
   defaultList: 600,
   tagFilter: 600,
   search: 120,
   publicShare: 1800,
   rateLimit: 60,
-} as const;
+};
 
 const DEFAULT_STRATEGIES: Record<CacheStrategyType, boolean> = {
   defaultList: true,
@@ -24,7 +24,7 @@ export function loadCacheConfig(env: NodeJS.ProcessEnv = process.env): CacheConf
     ...DEFAULT_STRATEGIES,
   };
 
-  const ttl = {
+  const ttl: CacheTtlConfig = {
     ...DEFAULT_TTL,
   };
 

@@ -9,20 +9,24 @@ export interface ExportBookmark {
   id: string
   title: string
   url: string
-  description?: string
+  description?: string | null
   cover_image?: string
+  favicon?: string
   tags: string[]
   is_pinned: boolean
-  created_at: string
-  updated_at: string
+  is_archived: boolean
+  is_public: boolean
   click_count?: number
   last_clicked_at?: string
+  snapshot_count?: number
+  created_at: string
+  updated_at: string
 }
 
 export interface ExportTag {
   id: string
   name: string
-  color: string
+  color?: string
   created_at: string
   updated_at: string
   bookmark_count?: number
@@ -30,31 +34,33 @@ export interface ExportTag {
 
 export interface ExportUser {
   id: string
-  email: string
-  name?: string
+  username: string
+  email?: string
   created_at: string
 }
 
 export interface ExportTabGroupItem {
   id: string
+  group_id: string
   title: string
   url: string
   favicon?: string
   position: number
-  is_pinned: boolean
-  is_todo: boolean
-  is_archived: boolean
+  is_pinned?: boolean
+  is_todo?: boolean
+  is_archived?: boolean
   created_at: string
 }
 
 export interface ExportTabGroup {
   id: string
+  user_id?: string
   title: string
   parent_id?: string
   is_folder: boolean
   position: number
   color?: string
-  tags?: string
+  tags?: string[]
   created_at: string
   updated_at: string
   items: ExportTabGroupItem[]

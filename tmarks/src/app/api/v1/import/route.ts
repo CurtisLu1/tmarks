@@ -15,7 +15,7 @@ import type {
   ExportBookmark,
   ExportTag,
   ExportTabGroup,
-} from '@/shared/import-export-types';
+} from '@shared/import-export-types';
 
 interface ImportResult {
   bookmarks: number;
@@ -133,7 +133,7 @@ async function handler(request: NextRequest, userId: string) {
     bookmarks: body.bookmarks?.length ?? 0,
     tags: body.tags?.length ?? 0,
     tab_groups: body.tab_groups?.length ?? 0,
-    tab_group_items: body.tab_groups?.reduce((acc, g) => acc + (g.items?.length ?? 0), 0) ?? 0,
+    tab_group_items: body.tab_groups?.reduce<number>((acc, group) => acc + (group.items?.length ?? 0), 0) ?? 0,
   };
 
   const tagMap = await upsertTags(userId, body.tags ?? []);

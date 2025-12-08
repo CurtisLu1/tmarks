@@ -333,7 +333,7 @@ export const tabGroups = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
-    parentId: uuid('parent_id').references(() => tabGroups.id, { onDelete: 'cascade' }),
+    parentId: uuid('parent_id'),
     isFolder: boolean('is_folder').notNull().default(false),
     position: integer('position').notNull().default(0),
     color: text('color'),

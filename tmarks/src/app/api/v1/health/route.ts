@@ -11,7 +11,6 @@ export const GET = withErrorHandling(async () => {
       version: '0.1.0',
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Health check failed:', error);
     return internalError('Dependency check failed', 'HEALTH_FAILED');
   }

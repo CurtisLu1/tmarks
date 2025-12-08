@@ -18,10 +18,12 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   try {
     const parts = hash.split(':');
     if (parts.length !== 3 || parts[0] !== 'pbkdf2_sha256') return false;
-    const iterations = Number.parseInt(parts[1], 10);
+    const [iterationsRaw, storedRaw] = [parts[1], parts[2]];
+    if (!iterationsRaw || !storedRaw) return false;
+    const iterations = Number.parseInt(iterationsRaw, 10);
     if (!Number.isFinite(iterations)) return false;
 
-    const stored = Buffer.from(parts[2], 'base64');
+    const stored = Buffer.from(storedRaw, 'base64');
     const salt = stored.subarray(0, SALT_LENGTH);
     const originalHash = stored.subarray(SALT_LENGTH);
 
@@ -52,8 +54,8 @@ export function generateNanoId(length: number = 21): string {
   const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-';
   const random = randomBytes(length);
   let id = '';
-  for (let i = 0; i < length; i += 1) {
-    id += alphabet[random[i] % alphabet.length];
+  for (const byte of random) {
+    id += alphabet[byte % alphabet.length];
   }
   return id;
 }

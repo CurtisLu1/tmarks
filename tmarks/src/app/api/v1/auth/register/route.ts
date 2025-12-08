@@ -107,7 +107,6 @@ async function handler(request: NextRequest) {
       createdAt: nowIso,
     });
   } catch (auditError) {
-    // eslint-disable-next-line no-console
     console.error('Failed to create audit log:', auditError);
   }
 

@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { bookmarkImages, bookmarkSnapshots } from '@/lib/db/schema';
-import { storage, type StorageProvider } from '@/lib/storage';
+import { storage } from '@/lib/storage';
+import type { StorageProvider } from '@/lib/storage/interface';
 
 interface AssetRecord {
   key: string | null;
@@ -27,7 +28,6 @@ export async function deleteAssetsFromRecords(
     try {
       await provider.delete(key);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.warn('Failed to delete asset key', key, error);
     }
   }

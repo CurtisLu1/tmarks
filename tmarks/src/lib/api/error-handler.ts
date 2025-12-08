@@ -3,7 +3,6 @@ import { badRequest, internalError, notFound } from './response';
 import { DatabaseError, NotFoundError, ValidationError } from '@/lib/errors';
 
 export function handleApiError(error: unknown): NextResponse {
-  // eslint-disable-next-line no-console
   console.error('API Error:', error);
 
   if (error instanceof ValidationError) {

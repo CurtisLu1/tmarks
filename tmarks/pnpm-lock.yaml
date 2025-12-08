@@ -70,7 +70,7 @@ importers:
         version: 4.1.0
       drizzle-orm:
         specifier: ^0.39.3
-        version: 0.39.3(@cloudflare/workers-types@4.20251008.0)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.5.0)(pg@8.16.3)
+        version: 0.39.3(@cloudflare/workers-types@4.20251008.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.5.0)(pg@8.16.3)
       ioredis:
         specifier: ^5.4.1
         version: 5.8.2
@@ -135,6 +135,9 @@ importers:
       '@types/node':
         specifier: 22.10.1
         version: 22.10.1
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.15.6
       '@types/react':
         specifier: 19.0.1
         version: 19.0.1
@@ -1375,6 +1378,9 @@ packages:
 
   '@types/node@22.10.1':
     resolution: {integrity: sha512-qKgsUwfHZV2WCWLAnVP1JqnpE6Im6h3Y0+fYgMTasNQ7V++CBX5OT1as0g0f+OyubbFqhf6XVNIsmN4IIhEgGQ==}
+
+  '@types/pg@8.15.6':
+    resolution: {integrity: sha512-NoaMtzhxOrubeL/7UZuNTrejB4MPAJ0RpxZqXQf2qXuVlTPuG6Y8p4u9dKRaue4yjmC7ZhzVO2/Yyyn25znrPQ==}
 
   '@types/react-dom@19.0.1':
     resolution: {integrity: sha512-hljHij7MpWPKF6u5vojuyfV0YA4YURsQG7KT6SzV0Zs2BXAtgdTxG6A229Ub/xiWV4w/7JL8fi6aAyjshH4meA==}
@@ -5011,6 +5017,12 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
+  '@types/pg@8.15.6':
+    dependencies:
+      '@types/node': 22.10.1
+      pg-protocol: 1.10.3
+      pg-types: 2.2.0
+
   '@types/react-dom@19.0.1':
     dependencies:
       '@types/react': 19.0.1
@@ -5636,10 +5648,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.39.3(@cloudflare/workers-types@4.20251008.0)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.5.0)(pg@8.16.3):
+  drizzle-orm@0.39.3(@cloudflare/workers-types@4.20251008.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.5.0)(pg@8.16.3):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20251008.0
       '@types/better-sqlite3': 7.6.13
+      '@types/pg': 8.15.6
       better-sqlite3: 12.5.0
       pg: 8.16.3
 

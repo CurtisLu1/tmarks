@@ -41,7 +41,6 @@ export const POST = withErrorHandling(
 
       return success({ message: 'Click recorded successfully', clicked_at: now });
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Record click error:', error);
       return internalError('Failed to record click');
     }

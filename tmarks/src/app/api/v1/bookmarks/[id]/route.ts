@@ -54,7 +54,6 @@ function toApiBookmark(
     snapshot_count: Number(row.snapshotCount ?? 0),
     created_at: row.createdAt,
     updated_at: row.updatedAt,
-    deleted_at: row.deletedAt ?? null,
     tags: tagsForBookmark,
   };
 }
@@ -86,7 +85,7 @@ function getBookmarkId(request: NextRequest): string {
   return segments[segments.length - 1] || '';
 }
 
-async function handleGet(request: NextRequest, userId: string, bookmarkId: string) {
+async function handleGet(_request: NextRequest, userId: string, bookmarkId: string) {
   const bookmark = await loadBookmarkWithTags(bookmarkId, userId);
   if (!bookmark) return notFound('Bookmark not found');
   return success({ bookmark });

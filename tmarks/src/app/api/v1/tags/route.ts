@@ -26,7 +26,6 @@ function normalizeTag(row: typeof tags.$inferSelect, bookmarkCount = 0): Tag & {
     last_clicked_at: row.lastClickedAt,
     created_at: row.createdAt,
     updated_at: row.updatedAt,
-    deleted_at: row.deletedAt ?? null,
     bookmark_count: bookmarkCount,
   };
 }

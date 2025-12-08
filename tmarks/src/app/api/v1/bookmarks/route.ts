@@ -79,7 +79,6 @@ function toApiBookmark(
     url: row.url,
     description: row.description,
     cover_image: row.coverImage,
-    cover_image_id: row.coverImageId,
     favicon: row.favicon,
     is_pinned: Boolean(row.isPinned),
     is_archived: Boolean(row.isArchived),
@@ -91,7 +90,6 @@ function toApiBookmark(
     snapshot_count: snapshotCount ?? Number(row.snapshotCount ?? 0),
     created_at: row.createdAt,
     updated_at: row.updatedAt,
-    deleted_at: row.deletedAt ?? null,
     tags: tagsForBookmark,
   };
 }
@@ -245,7 +243,7 @@ async function fetchBookmarks(userId: string, query: BookmarkListQuery) {
     meta: {
       page_size: query.pageSize,
       count: data.length,
-      next_cursor: hasMore ? idRows[query.pageSize].id : null,
+      next_cursor: hasMore ? idRows[query.pageSize]?.id ?? null : null,
       has_more: hasMore,
     },
   };
@@ -318,8 +316,9 @@ async function handlePost(request: NextRequest, userId: string) {
       return success(
         {
           bookmark: toApiBookmark(existing, bookmarkTagsRows),
+          code: 'BOOKMARK_EXISTS',
+          message: 'Bookmark already exists',
         },
-        { message: 'Bookmark already exists', code: 'BOOKMARK_EXISTS' },
       );
     }
 

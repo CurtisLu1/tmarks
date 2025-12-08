@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { badRequest, notFound, success } from '@/lib/api/response';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
@@ -23,7 +23,7 @@ async function handlePost(body: BatchAddItemsRequest, userId: string) {
   }
 
   const group = await db.query.tabGroups.findFirst({
-    where: (eb) => eb.and(eb.eq(tabGroups.id, body.group_id), eb.eq(tabGroups.userId, userId), eb.isNull(tabGroups.deletedAt)),
+    where: and(eq(tabGroups.id, body.group_id), eq(tabGroups.userId, userId), isNull(tabGroups.deletedAt)),
   });
   if (!group) return notFound('Tab group not found');
 

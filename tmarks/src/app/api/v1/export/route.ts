@@ -1,5 +1,5 @@
-import { NextRequest } from 'next/server';
-import { and, eq, isNull } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
 import { badRequest } from '@/lib/api/response';
@@ -20,11 +20,11 @@ import type {
   ExportTag,
   ExportUser,
   TMarksExportData,
-} from '@/shared/import-export-types';
+} from '@shared/import-export-types';
 
 const EXPORT_VERSION = '1.0.0';
 
-async function collectUserData(userId: string): Promise<TMarksExportData> {
+async function collectUserData(userId: string, format: ExportFormat): Promise<TMarksExportData> {
   const userRow = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });
@@ -85,6 +85,7 @@ async function collectUserData(userId: string): Promise<TMarksExportData> {
     is_public: Boolean(b.isPublic),
     click_count: Number(b.clickCount ?? 0),
     last_clicked_at: b.lastClickedAt || undefined,
+    snapshot_count: b.snapshotCount ?? undefined,
     created_at: b.createdAt,
     updated_at: b.updatedAt,
     tags: bookmarkTagsMap.get(b.id) || [],
@@ -98,7 +99,7 @@ async function collectUserData(userId: string): Promise<TMarksExportData> {
   const tabGroupItemRows = await db
     .select()
     .from(tabGroupItems)
-    .where((eb) => eb.inArray(tabGroupItems.groupId, tabGroupRows.map((g) => g.id)));
+    .where(inArray(tabGroupItems.groupId, tabGroupRows.map((g) => g.id)));
 
   const tabGroupsMap = new Map<string, ExportTabGroup>();
   for (const g of tabGroupRows) {
@@ -137,6 +138,13 @@ async function collectUserData(userId: string): Promise<TMarksExportData> {
     bookmarks: bookmarksExport,
     tags: Array.from(tagMap.values()),
     tab_groups: Array.from(tabGroupsMap.values()),
+    exported_at: new Date().toISOString(),
+    metadata: {
+      total_bookmarks: bookmarkRows.length,
+      total_tags: tagRows.length,
+      total_tab_groups: tabGroupRows.length,
+      export_format: format,
+    },
   };
 }
 
@@ -146,7 +154,7 @@ function buildFilename(username: string, format: ExportFormat = 'json') {
   return `${safe}-export-${stamp}.${format}`;
 }
 
-async function handler(request: NextRequest, userId: string) {
+async function handler(request: NextRequest, userId: string): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams;
   const format = (searchParams.get('format') || 'json') as ExportFormat;
 
@@ -154,11 +162,11 @@ async function handler(request: NextRequest, userId: string) {
     return badRequest('Only json export is supported in this build');
   }
 
-  const exportData = await collectUserData(userId);
+  const exportData = await collectUserData(userId, format);
   const body = JSON.stringify(exportData, null, searchParams.get('pretty_print') === 'false' ? undefined : 2);
   const filename = buildFilename(exportData.user.username || exportData.user.id, format);
 
-  return new Response(body, {
+  return new NextResponse(body, {
     status: 200,
     headers: {
       'Content-Type': 'application/json',

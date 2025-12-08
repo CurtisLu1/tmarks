@@ -30,7 +30,7 @@ async function loadTag(tagId: string, userId: string) {
   });
 }
 
-async function handleGet(request: NextRequest, userId: string, tagId: string) {
+async function handleGet(_request: NextRequest, userId: string, tagId: string) {
   const tag = await loadTag(tagId, userId);
   if (!tag) return notFound('Tag not found');
   return success({ tag });
