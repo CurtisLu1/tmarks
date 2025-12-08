@@ -77,7 +77,7 @@ export class TabGroupsAPI extends TMarksClient {
    * GET /api/v1/tab-groups
    */
   async getTabGroups(params?: GetTabGroupsParams): Promise<GetTabGroupsResponse> {
-    return this.get<GetTabGroupsResponse>('/v1/tab-groups', params);
+    return this.get<GetTabGroupsResponse>('/tab-groups', params);
   }
 
   /**
@@ -85,7 +85,7 @@ export class TabGroupsAPI extends TMarksClient {
    * POST /api/v1/tab-groups
    */
   async createTabGroup(input: CreateTabGroupInput): Promise<CreateTabGroupResponse> {
-    return this.post<CreateTabGroupResponse>('/v1/tab-groups', input);
+    return this.post<CreateTabGroupResponse>('/tab-groups', input);
   }
 
   /**
@@ -93,7 +93,7 @@ export class TabGroupsAPI extends TMarksClient {
    * GET /api/v1/tab-groups/:id
    */
   async getTabGroup(id: string): Promise<GetTabGroupResponse> {
-    return this.get<GetTabGroupResponse>(`/v1/tab-groups/${id}`);
+    return this.get<GetTabGroupResponse>(`/tab-groups/${id}`);
   }
 
   /**
@@ -104,7 +104,7 @@ export class TabGroupsAPI extends TMarksClient {
     id: string,
     input: UpdateTabGroupInput
   ): Promise<CreateTabGroupResponse> {
-    return this.patch<CreateTabGroupResponse>(`/v1/tab-groups/${id}`, input);
+    return this.patch<CreateTabGroupResponse>(`/tab-groups/${id}`, input);
   }
 
   /**
@@ -112,7 +112,7 @@ export class TabGroupsAPI extends TMarksClient {
    * DELETE /api/v1/tab-groups/:id
    */
   async deleteTabGroup(id: string): Promise<void> {
-    return this.delete<void>(`/v1/tab-groups/${id}`);
+    return this.delete<void>(`/tab-groups/${id}`);
   }
 
   // ============ 辅助方法 ============
