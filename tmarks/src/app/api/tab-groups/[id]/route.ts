@@ -99,7 +99,7 @@ async function handlePatch(_request: NextRequest, userId: string, groupId: strin
   const existing = await loadGroup(userId, groupId);
   if (!existing) return notFound('Tab group not found');
 
-  const body = (await request.json()) as UpdateTabGroupRequest;
+  const body = (await _request.json()) as UpdateTabGroupRequest;
   const updates: Partial<typeof tabGroups.$inferInsert> = {};
 
   if (body.title !== undefined) updates.title = sanitizeString(body.title, 200);
