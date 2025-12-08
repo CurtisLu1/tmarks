@@ -151,9 +151,27 @@ async function upsertTags(
   const createMissing = options?.create_missing_tags ?? true;
 
   for (const tag of incoming) {
-    const tagId = sanitizeId(tag.id) || crypto.randomUUID();
+    // Check if tag.id is a valid UUID, otherwise generate one
+    const isValidUuid = tag.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tag.id);
+    const tagId = isValidUuid ? tag.id : crypto.randomUUID();
 
     if (createMissing) {
+      // Check if tag with this name already exists for user
+      const existingTag = await db.query.tags.findFirst({
+        where: and(
+          eq(tags.userId, userId),
+          eq(tags.name, tag.name)
+        ),
+      });
+
+      if (existingTag) {
+        // Tag already exists, use its ID
+        idMap.set(tag.id ?? tag.name, existingTag.id);
+        idMap.set(tag.name, existingTag.id);
+        continue;
+      }
+
+      // Insert new tag
       await db
         .insert(tags)
         .values({
@@ -166,7 +184,9 @@ async function upsertTags(
         })
         .onConflictDoNothing({ target: tags.id });
     }
+    // Map both the original id/name and the tag name to the actual UUID
     idMap.set(tag.id ?? tag.name, tagId);
+    idMap.set(tag.name, tagId);
   }
   return idMap;
 }
