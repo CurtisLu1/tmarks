@@ -80,4 +80,40 @@ export async function createOrLinkTags({ bookmarkId, tagNames, userId }: CreateO
   }
 }
 
+/**
+ * 获取书签关联的标签 IDs
+ */
+export async function getBookmarkTagIds(bookmarkId: string): Promise<string[]> {
+  const rows = await db
+    .select({ tagId: bookmarkTags.tagId })
+    .from(bookmarkTags)
+    .where(eq(bookmarkTags.bookmarkId, bookmarkId));
+  return rows.map((r) => r.tagId);
+}
 
+/**
+ * 清理空标签（无关联书签的标签）
+ * 使用软删除，保持数据可恢复性
+ */
+export async function cleanupEmptyTags(userId: string, tagIds: string[]): Promise<void> {
+  if (tagIds.length === 0) return;
+
+  const now = new Date().toISOString();
+
+  for (const tagId of tagIds) {
+    // 检查标签是否还有关联的书签
+    const countResult = await db
+      .select({ tagId: bookmarkTags.tagId })
+      .from(bookmarkTags)
+      .where(eq(bookmarkTags.tagId, tagId))
+      .limit(1);
+
+    if (countResult.length === 0) {
+      // 软删除空标签
+      await db
+        .update(tags)
+        .set({ deletedAt: now, updatedAt: now })
+        .where(and(eq(tags.id, tagId), eq(tags.userId, userId)));
+    }
+  }
+}

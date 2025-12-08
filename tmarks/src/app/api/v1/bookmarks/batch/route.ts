@@ -6,7 +6,7 @@ import { withAuth } from '@/lib/api/middleware/auth';
 import { db } from '@/lib/db';
 import { bookmarks, bookmarkTags, tags } from '@/lib/db/schema';
 import { deleteBookmarkAssets } from '@/lib/bookmarks/delete';
-import { createOrLinkTags } from '@/lib/tags';
+import { createOrLinkTags, getBookmarkTagIds, cleanupEmptyTags } from '@/lib/tags';
 import { isValidUrl, sanitizeString } from '@/lib/validation';
 import type { Bookmark, Tag } from '@/lib/types';
 
@@ -275,6 +275,7 @@ async function handleDelete(request: NextRequest, userId: string) {
 
     const results: BatchResult[] = [];
     const now = new Date().toISOString();
+    const allTagIds: string[] = [];
 
     // Verify all bookmarks belong to the user
     const existingBookmarks = await db.query.bookmarks.findMany({
@@ -293,6 +294,10 @@ async function handleDelete(request: NextRequest, userId: string) {
             continue;
         }
 
+        // 获取书签关联的标签 IDs（在删除关联前）
+        const tagIds = await getBookmarkTagIds(id);
+        allTagIds.push(...tagIds);
+
         await deleteBookmarkAssets(id);
         await db
             .update(bookmarks)
@@ -302,6 +307,10 @@ async function handleDelete(request: NextRequest, userId: string) {
 
         results.push({ success: true, id });
     }
+
+    // 清理空标签
+    const uniqueTagIds = [...new Set(allTagIds)];
+    await cleanupEmptyTags(userId, uniqueTagIds);
 
     const succeeded = results.filter((r) => r.success).length;
     const failed = results.filter((r) => !r.success).length;

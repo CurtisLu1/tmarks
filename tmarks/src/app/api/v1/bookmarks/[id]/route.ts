@@ -12,7 +12,7 @@ import { withAuth } from '@/lib/api/middleware/auth';
 import { db } from '@/lib/db';
 import { bookmarkTags, bookmarks, tags } from '@/lib/db/schema';
 import { deleteBookmarkAssets } from '@/lib/bookmarks/delete';
-import { createOrLinkTags } from '@/lib/tags';
+import { createOrLinkTags, getBookmarkTagIds, cleanupEmptyTags } from '@/lib/tags';
 import {
   isValidUrl,
   sanitizeString,
@@ -150,6 +150,9 @@ async function handleDelete(userId: string, bookmarkId: string) {
   });
   if (!existing) return notFound('Bookmark not found');
 
+  // 获取书签关联的标签 IDs（在删除关联前）
+  const tagIds = await getBookmarkTagIds(bookmarkId);
+
   const now = new Date().toISOString();
   await deleteBookmarkAssets(bookmarkId);
   await db
@@ -163,6 +166,9 @@ async function handleDelete(userId: string, bookmarkId: string) {
     .where(eq(bookmarks.id, bookmarkId));
 
   await db.delete(bookmarkTags).where(eq(bookmarkTags.bookmarkId, bookmarkId));
+
+  // 清理空标签
+  await cleanupEmptyTags(userId, tagIds);
 
   return noContent();
 }

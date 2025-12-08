@@ -1,5 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { bookmarksService } from '@/services/bookmarks'
+import { TAGS_QUERY_KEY } from './useTags'
 import type {
   BookmarkQueryParams,
   CreateBookmarkRequest,
@@ -88,6 +89,7 @@ export function useUpdateBookmark() {
     onSuccess: async () => {
       try {
         await queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+        await queryClient.invalidateQueries({ queryKey: [TAGS_QUERY_KEY] })
       } catch (error) {
         console.error('Failed to invalidate queries:', error)
       }
@@ -106,6 +108,7 @@ export function useDeleteBookmark() {
     onSuccess: async () => {
       try {
         await queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+        await queryClient.invalidateQueries({ queryKey: [TAGS_QUERY_KEY] })
       } catch (error) {
         console.error('Failed to invalidate queries:', error)
       }
@@ -152,6 +155,7 @@ export function useBatchAction() {
       // 使用 catch 来防止 invalidateQueries 的错误影响 mutation 结果
       try {
         await queryClient.invalidateQueries({ queryKey: [BOOKMARKS_QUERY_KEY] })
+        await queryClient.invalidateQueries({ queryKey: [TAGS_QUERY_KEY] })
       } catch (error) {
         console.error('Failed to invalidate queries:', error)
         // 即使缓存失效失败也不应该让操作显示为失败
