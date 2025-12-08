@@ -31,7 +31,7 @@ TMarks 是一个现代化的智能书签管理系统，结合 AI 技术自动生
 
 ### 技术栈
 
-- **前端**: React 18/19 + TypeScript + Vite + TailwindCSS 4
+- **前端**: React 18/19 + TypeScript + Vite + TailwindCSS 3
 - **后端（自托管）**: Next.js App Router + PostgreSQL + Redis + MinIO/本地存储（Dokploy / Docker Compose）
 - **数据库**: PostgreSQL 16
 - **缓存**: Redis

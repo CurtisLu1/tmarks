@@ -7,7 +7,7 @@ import type {
 import { AppError } from '@/types';
 import { StorageService } from '@/lib/utils/storage';
 import { createTMarksClient, type TMarksBookmark, type TMarksTag } from '@/lib/api/tmarks';
-import { getTMarksUrls } from '@/lib/constants/urls';
+import { getTMarksUrls, normalizeApiUrl } from '@/lib/constants/urls';
 
 export class BookmarkAPIClient {
   private client: ReturnType<typeof createTMarksClient> | null = null;
@@ -23,23 +23,8 @@ export class BookmarkAPIClient {
       );
     }
 
-    // 从配置的 URL 获取 API 基础地址
-    // 支持两种格式：
-    // 1. 基础 URL（推荐）：https://tmarks.makeliving.fun -> https://tmarks.makeliving.fun/api
-    // 2. 完整 API URL（兼容旧版）：https://tmarks.makeliving.fun/api -> https://tmarks.makeliving.fun/api
-    let apiBaseUrl: string;
-    if (configuredUrl) {
-      if (configuredUrl.endsWith('/api')) {
-        // 已经是完整的 API URL
-        apiBaseUrl = configuredUrl;
-      } else {
-        // 基础 URL，需要补全 /api
-        apiBaseUrl = getTMarksUrls(configuredUrl).API_BASE;
-      }
-    } else {
-      // 使用默认 URL
-      apiBaseUrl = getTMarksUrls().API_BASE;
-    }
+    // 标准化 API 基础地址，自动补齐 /api/v1（兼容旧的 /api 或基础域名）
+    const apiBaseUrl = normalizeApiUrl(configuredUrl || getTMarksUrls().BASE_URL);
 
     // Create TMarks client with proper API key
     this.client = createTMarksClient({

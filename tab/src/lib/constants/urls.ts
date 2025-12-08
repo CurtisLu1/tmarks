@@ -6,7 +6,7 @@
 // TMarks 服务相关
 export const TMARKS_URLS = {
     DEFAULT_BASE_URL: 'https://tmarks.makeliving.fun',
-    DEFAULT_API_BASE: 'https://tmarks.makeliving.fun/api',
+    DEFAULT_API_BASE: 'https://tmarks.makeliving.fun/api/v1',
 } as const;
 
 /**
@@ -20,7 +20,7 @@ export function getTMarksUrls(baseUrl?: string) {
     
     return {
         BASE_URL: cleanBase,
-        API_BASE: `${cleanBase}/api`,
+        API_BASE: `${cleanBase}/api/v1`,
         WEB_APP: `${cleanBase}/`,
         TAB_GROUPS: `${cleanBase}/tab`,
     };
@@ -46,13 +46,18 @@ export function normalizeApiUrl(url: string): string {
     // 移除末尾的斜杠
     const cleanUrl = url.trim().replace(/\/+$/, '');
     
-    // 如果已经包含 /api，直接返回
-    if (cleanUrl.endsWith('/api')) {
+    // 如果已经是 /api/v1，直接返回
+    if (cleanUrl.endsWith('/api/v1')) {
         return cleanUrl;
     }
     
-    // 否则添加 /api 后缀
-    return `${cleanUrl}/api`;
+    // 如果结尾是 /api，补上版本号
+    if (cleanUrl.endsWith('/api')) {
+        return `${cleanUrl}/v1`;
+    }
+    
+    // 否则追加 /api/v1
+    return `${cleanUrl}/api/v1`;
 }
 
 // AI 服务默认 URL
