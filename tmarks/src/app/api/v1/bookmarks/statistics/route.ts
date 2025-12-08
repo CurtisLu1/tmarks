@@ -1,15 +1,25 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  return NextResponse.json({
-    data: {
-      summary: {
-        total_bookmarks: 0,
-        total_deleted: 0,
-        total_public: 0,
-      },
-      trends: [],
+  const empty = {
+    summary: {
+      total_bookmarks: 0,
+      total_tags: 0,
+      total_clicks: 0,
+      archived_bookmarks: 0,
+      public_bookmarks: 0,
     },
-  });
+    top_bookmarks: [],
+    top_tags: [],
+    top_domains: [],
+    bookmark_clicks: [],
+    recent_clicks: [],
+    trends: {
+      bookmarks: [],
+      clicks: [],
+    },
+  };
+
+  return NextResponse.json({ data: empty });
 }
 
