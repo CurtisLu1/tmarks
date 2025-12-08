@@ -89,13 +89,13 @@ async function loadGroup(userId: string, groupId: string, includeDeleted = false
   return toApiGroup(group, mappedItems);
 }
 
-async function handleGet(request: NextRequest, userId: string, groupId: string) {
+async function handleGet(_request: NextRequest, userId: string, groupId: string) {
   const group = await loadGroup(userId, groupId);
   if (!group) return notFound('Tab group not found');
   return success({ tab_group: group });
 }
 
-async function handlePatch(request: NextRequest, userId: string, groupId: string) {
+async function handlePatch(_request: NextRequest, userId: string, groupId: string) {
   const existing = await loadGroup(userId, groupId);
   if (!existing) return notFound('Tab group not found');
 
