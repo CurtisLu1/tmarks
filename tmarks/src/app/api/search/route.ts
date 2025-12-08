@@ -76,7 +76,6 @@ async function handleSearch(request: NextRequest, userId: string) {
         url: b.url,
         description: b.description,
         cover_image: b.coverImage,
-        cover_image_id: b.coverImageId,
         favicon: b.favicon,
         is_pinned: Boolean(b.isPinned),
         is_archived: Boolean(b.isArchived),

@@ -43,7 +43,6 @@ function toApiBookmark(
     url: row.url,
     description: row.description,
     cover_image: row.coverImage,
-    cover_image_id: row.coverImageId,
     favicon: row.favicon,
     is_pinned: Boolean(row.isPinned),
     is_archived: Boolean(row.isArchived),

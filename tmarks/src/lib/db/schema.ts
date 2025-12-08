@@ -89,7 +89,7 @@ export const bookmarks = pgTable(
     url: text('url').notNull(),
     description: text('description'),
     coverImage: text('cover_image'),
-    coverImageId: text('cover_image_id'),
+  coverImageId: text('cover_image_id'),
     favicon: text('favicon'),
     isPinned: boolean('is_pinned').notNull().default(false),
     isArchived: boolean('is_archived').notNull().default(false),
