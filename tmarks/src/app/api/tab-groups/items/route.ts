@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 import { badRequest, notFound, success } from '@/lib/api/response';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
@@ -29,7 +30,7 @@ async function handlePost(body: BatchAddItemsRequest, userId: string) {
   const maxPos = await db
     .select({ max: tabGroupItems.position })
     .from(tabGroupItems)
-    .where((eb) => eb.eq(tabGroupItems.groupId, body.group_id))
+    .where(eq(tabGroupItems.groupId, body.group_id))
     .limit(1);
 
   let position = (maxPos[0]?.max ?? -1) + 1;
@@ -51,7 +52,7 @@ async function handlePost(body: BatchAddItemsRequest, userId: string) {
   const items = await db
     .select()
     .from(tabGroupItems)
-    .where((eb) => eb.eq(tabGroupItems.groupId, body.group_id))
+    .where(eq(tabGroupItems.groupId, body.group_id))
     .orderBy(tabGroupItems.position);
 
   return success({
