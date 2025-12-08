@@ -217,7 +217,7 @@ export function SnapshotViewer({ bookmarkId, bookmarkTitle, snapshotCount = 0 }:
                     className="flex-1 flex items-center justify-between gap-3 text-left min-w-0 group/item"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 w-16 h-11 rounded-lg bg-muted overflow-hidden group-hover/item:scale-105 transition-transform">
+                      <div className="flex-shrink-0 w-24 h-16 rounded-lg bg-muted overflow-hidden group-hover/item:scale-105 transition-transform">
                         <img
                           src={snapshot.view_url}
                           alt={`快照版本 ${snapshot.version}`}
