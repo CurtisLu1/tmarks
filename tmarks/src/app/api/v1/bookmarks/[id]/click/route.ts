@@ -8,7 +8,7 @@ import { bookmarkClickEvents, bookmarks } from '@/lib/db/schema';
 
 function getBookmarkId(request: NextRequest): string {
   const segments = request.nextUrl.pathname.split('/');
-  return segments[segments.length - 2] || segments[segments.length - 1];
+  return segments[segments.length - 2] ?? segments[segments.length - 1] ?? '';
 }
 
 export const POST = withErrorHandling(
