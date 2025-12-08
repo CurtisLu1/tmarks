@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { and, desc, eq, isNull, lt } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, lt } from 'drizzle-orm';
 import { badRequest, created, success } from '@/lib/api/response';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
@@ -82,7 +82,7 @@ async function handleGet(request: NextRequest, userId: string) {
     items = await db
       .select()
       .from(tabGroupItems)
-      .where((eb) => eb.inArray(tabGroupItems.groupId, groupIds))
+      .where(inArray(tabGroupItems.groupId, groupIds))
       .orderBy(tabGroupItems.position);
   }
 
