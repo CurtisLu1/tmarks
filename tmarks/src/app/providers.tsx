@@ -1,6 +1,7 @@
 'use client';
 
 import { QueryClientProvider } from '@tanstack/react-query';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import React from 'react';
 
 import { ThemeProvider } from '@/components/layout/theme-provider';
@@ -11,11 +12,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = React.useMemo(() => getQueryClient(), []);
 
   return (
-    <ThemeProvider>
-      <Toaster>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </Toaster>
-    </ThemeProvider>
+    <NuqsAdapter>
+      <ThemeProvider>
+        <Toaster>
+          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        </Toaster>
+      </ThemeProvider>
+    </NuqsAdapter>
   );
 }
 
