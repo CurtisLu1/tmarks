@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useTags, useCreateTag } from '@/hooks/useTags'
+import { useTags, useCreateTag, useRefreshTags } from '@/hooks/useTags'
 import { tagsService } from '@/services/tags'
 import type { Bookmark, Tag } from '@/lib/types'
 import { TagManageModal } from './TagManageModal'
@@ -47,6 +47,15 @@ export function TagSidebar({
 
   const tags = useMemo(() => availableTags || data?.tags || [], [availableTags, data?.tags])
   const isTagLoading = availableTags ? false : isLoading
+  const refreshTags = useRefreshTags()
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    refreshTags()
+    // 短暂延迟显示加载状态
+    setTimeout(() => setIsRefreshing(false), 500)
+  }
 
   // 使用自定义 Hook 处理标签筛选逻辑
   // 使用外部传入的搜索关键词
@@ -161,6 +170,24 @@ export function TagSidebar({
                 <rect x="14" y="17" width="7" height="4" rx="1" />
               </svg>
             )}
+          </button>
+
+          {/* 刷新按钮 */}
+          <button
+            onClick={handleRefresh}
+            className="btn btn-sm btn-ghost p-2 flex-shrink-0"
+            title="刷新标签计数"
+            disabled={isRefreshing}
+          >
+            <svg
+              className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
           </button>
 
           {/* 右侧按钮组 */}

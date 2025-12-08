@@ -22,6 +22,17 @@ export function useTags(
 }
 
 /**
+ * 手动刷新标签数据
+ */
+export function useRefreshTags() {
+  const queryClient = useQueryClient()
+
+  return () => {
+    queryClient.invalidateQueries({ queryKey: [TAGS_QUERY_KEY] })
+  }
+}
+
+/**
  * 创建标签
  */
 export function useCreateTag() {
