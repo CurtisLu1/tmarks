@@ -36,7 +36,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/index.ts-loader-BOC1S_33.js"
+        "assets/index.ts-CompeOYk.js"
       ],
       "matches": [
         "<all_urls>"
@@ -56,10 +56,7 @@
         "<all_urls>"
       ],
       "resources": [
-        "assets/preload-helper-BhLMWRjL.js",
-        "assets/singlefile-capture-Bkt_j5oF.js",
-        "assets/singlefile-capture-v2-DXdSZKa8.js",
-        "assets/index.ts-BkN6eQy3.js"
+        "assets/index.ts-CompeOYk.js"
       ],
       "use_dynamic_url": false
     }
