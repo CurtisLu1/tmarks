@@ -378,7 +378,7 @@ export default function BookmarksPage() {
     <div className="w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] flex flex-col overflow-hidden touch-pan-y">
       <div className="flex flex-col lg:flex-row gap-0 lg:gap-4 w-full h-full overflow-hidden touch-pan-y">
         {/* 左侧：标签侧边栏 - 桌面端显示 */}
-        <aside className="hidden lg:flex flex-shrink-0 w-72 xl:w-80 2xl:w-96 order-2 lg:order-1 flex-col overflow-hidden">
+        <aside className="hidden lg:flex flex-shrink-0 w-[460px] xl:w-[500px] 2xl:w-[560px] order-2 lg:order-1 flex-col overflow-hidden">
           <TagSidebar
             selectedTags={selectedTags}
             onTagsChange={(next) => setQueryStates({ tags: next })}

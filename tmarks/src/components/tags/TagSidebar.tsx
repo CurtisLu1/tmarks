@@ -253,7 +253,7 @@ export function TagSidebar({
                 ? 'flex flex-wrap items-start gap-2'
                 : 'grid gap-2'
                 }`}
-              style={tagLayout === 'grid' ? { gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))' } : undefined}
+              style={tagLayout === 'grid' ? { gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' } : undefined}
             >
               {orderedTags.map((tag) => (
                 <TagItem
