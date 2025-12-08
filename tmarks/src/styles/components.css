@@ -134,6 +134,7 @@ html {
 
 .btn-secondary {
   background: linear-gradient(135deg, var(--secondary) 0%, oklch(from var(--secondary) calc(l - 0.05) c h) 100%);
+  color: var(--secondary-foreground);
   box-shadow:
     0 4px 12px -2px rgba(from var(--secondary) r g b / 0.3),
     0 2px 6px -1px rgba(from var(--secondary) r g b / 0.2);
