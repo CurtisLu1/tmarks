@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
-import { badRequest, created } from '@/lib/api/response';
+import { badRequest } from '@/lib/api/response';
 import { db } from '@/lib/db';
 import {
   bookmarkTags,
@@ -15,7 +15,11 @@ import type {
   ExportBookmark,
   ExportTag,
   ExportTabGroup,
+  ImportFormat,
+  ImportOptions,
+  ImportResult as ImportResponse,
 } from '@shared/import-export-types';
+import { NextResponse } from 'next/server';
 
 interface ImportResult {
   bookmarks: number;
@@ -126,7 +130,74 @@ async function upsertTabGroups(userId: string, incoming: ExportTabGroup[]) {
 }
 
 async function handler(request: NextRequest, userId: string) {
-  const body = (await request.json()) as TMarksExportData | null;
+  const payload = (await request.json()) as
+    | { format?: ImportFormat; content?: string; options?: ImportOptions }
+    | null;
+
+  if (!payload?.format || !payload.content) {
+    return badRequest('Invalid import payload');
+  }
+
+  let body: TMarksExportData | null = null;
+
+  if (payload.format === 'json' || payload.format === 'tmarks') {
+    try {
+      body = JSON.parse(payload.content) as TMarksExportData;
+    } catch {
+      return badRequest('Invalid JSON content');
+    }
+  } else if (payload.format === 'html') {
+    // 轻量级 HTML 书签解析（提取 <a> 标签）
+    const anchors: Array<{ title: string; url: string }> = [];
+    const anchorRegex = /<a[^>]*href=["']([^"']+)["'][^>]*>([^<]*)<\/a>/gi;
+    let match: RegExpExecArray | null;
+    while ((match = anchorRegex.exec(payload.content)) !== null) {
+      const url = match[1]?.trim() ?? '';
+      const title = match[2]?.trim() || url;
+      if (url) {
+        anchors.push({ title, url });
+      }
+    }
+
+    if (!anchors.length) {
+      return badRequest('No bookmarks found in HTML');
+    }
+
+    const now = new Date().toISOString();
+    body = {
+      version: '1.0.0',
+      exported_at: now,
+      user: {
+        id: userId,
+        username: 'import',
+        created_at: now,
+      },
+      bookmarks: anchors.map((a) => ({
+        id: crypto.randomUUID(),
+        title: a.title,
+        url: a.url,
+        description: undefined,
+        cover_image: undefined,
+        favicon: undefined,
+        tags: [],
+        is_pinned: false,
+        is_archived: false,
+        is_public: false,
+        created_at: now,
+        updated_at: now,
+      })) as ExportBookmark[],
+      tags: [],
+      tab_groups: [],
+      metadata: {
+        total_bookmarks: anchors.length,
+        total_tags: 0,
+        export_format: 'html',
+      },
+    };
+  } else {
+    return badRequest('Unsupported import format');
+  }
+
   if (!body) return badRequest('Invalid import payload');
 
   const result: ImportResult = {
@@ -140,11 +211,46 @@ async function handler(request: NextRequest, userId: string) {
   await upsertBookmarks(userId, body.bookmarks ?? [], tagMap);
   await upsertTabGroups(userId, body.tab_groups ?? []);
 
-  return created({ message: 'Import completed', stats: result });
+  const response: ImportResponse = {
+    success: result.bookmarks,
+    failed: 0,
+    skipped: 0,
+    total: result.bookmarks,
+    errors: [],
+    created_bookmarks: [],
+    created_tags: Array.from(new Set(Array.from(tagMap.values()))),
+    created_tab_groups: [],
+    tab_groups_success: result.tab_groups,
+    tab_groups_failed: 0,
+  };
+
+  return NextResponse.json<ImportResponse>(response, { status: 201 });
 }
 
 export const POST = withErrorHandling(
   withAuth(async (request, ctx) => handler(request, ctx.userId)),
+);
+
+// 简单的导入预览/能力说明（不解析文件，不写库）
+export const GET = withErrorHandling(
+  withAuth(async (request) => {
+    const format = request.nextUrl.searchParams.get('format');
+    const preview = request.nextUrl.searchParams.get('preview') === 'true';
+
+    if (!preview) {
+      return badRequest('Preview only; use POST for import');
+    }
+
+    if (format && !['json', 'tmarks', 'html'].includes(format)) {
+      return badRequest('Unsupported import format');
+    }
+
+    return NextResponse.json({
+      supported_formats: ['json', 'tmarks', 'html'],
+      max_size_mb: 50,
+      notes: 'HTML 预览仅提供能力说明，实际导入请使用 POST 并携带文件内容',
+    });
+  }),
 );
 
 

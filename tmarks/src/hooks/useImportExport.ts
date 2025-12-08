@@ -57,6 +57,7 @@ export function useImportExport(): UseImportExportReturn {
 
       const token = useAuthStore.getState().accessToken
       const response = await fetch(`/api/v1/export?${params}`, {
+        method: 'GET',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       })
 
@@ -124,13 +125,9 @@ export function useImportExport(): UseImportExportReturn {
   const getExportPreview = useCallback(async () => {
     try {
       const token = useAuthStore.getState().accessToken
-      const response = await fetch('/api/v1/export', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ format: 'json' })
+      const response = await fetch('/api/v1/export?format=json&pretty_print=true', {
+        method: 'GET',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       })
 
       if (!response.ok) {
@@ -144,23 +141,20 @@ export function useImportExport(): UseImportExportReturn {
     }
   }, [])
 
-  // 获取导入预览
+  // 获取导入预览（能力说明，不解析文件）
   const getImportPreview = useCallback(async (format: ImportFormat) => {
-    try {
-      const token = useAuthStore.getState().accessToken
-      const response = await fetch(`/api/v1/import?format=${format}&preview=true`, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-      })
+    const token = useAuthStore.getState().accessToken
+    const response = await fetch(`/api/v1/import?format=${format}&preview=true`, {
+      method: 'GET',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    })
 
-      if (!response.ok) {
-        throw new Error('Failed to get import preview')
-      }
-
-      return await response.json()
-    } catch (error) {
-      logger.error('Import preview error:', error)
-      throw error
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}))
+      throw new Error(error.message || 'Failed to get import preview')
     }
+
+    return response.json()
   }, [])
 
   // 清除错误
