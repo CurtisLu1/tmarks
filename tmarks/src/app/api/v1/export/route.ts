@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { and, eq, isNull } from 'drizzle-orm';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
-import { badRequest, internalError } from '@/lib/api/response';
+import { badRequest } from '@/lib/api/response';
 import { db } from '@/lib/db';
 import {
   bookmarkTags,
@@ -15,7 +15,6 @@ import {
 import type {
   ExportBookmark,
   ExportFormat,
-  ExportOptions,
   ExportTabGroup,
   ExportTabGroupItem,
   ExportTag,

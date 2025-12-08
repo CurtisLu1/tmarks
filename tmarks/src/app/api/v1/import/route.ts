@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server';
-import { and, eq } from 'drizzle-orm';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
-import { badRequest, created, internalError } from '@/lib/api/response';
+import { badRequest, created } from '@/lib/api/response';
 import { db } from '@/lib/db';
 import {
   bookmarkTags,
@@ -16,7 +15,6 @@ import type {
   ExportBookmark,
   ExportTag,
   ExportTabGroup,
-  ExportTabGroupItem,
 } from '@/shared/import-export-types';
 
 interface ImportResult {

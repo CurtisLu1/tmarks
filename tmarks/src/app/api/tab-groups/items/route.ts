@@ -1,4 +1,4 @@
-import { badRequest, internalError, notFound, success } from '@/lib/api/response';
+import { badRequest, notFound, success } from '@/lib/api/response';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';
 import { db } from '@/lib/db';

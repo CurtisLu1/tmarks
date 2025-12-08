@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { and, desc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, desc, eq, isNull } from 'drizzle-orm';
 import { badRequest, internalError, noContent, notFound, success } from '@/lib/api/response';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { withErrorHandling } from '@/lib/api/error-handler';

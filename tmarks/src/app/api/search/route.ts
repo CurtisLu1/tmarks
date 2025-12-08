@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
-import { and, ilike, inArray, isNull, or } from 'drizzle-orm';
+import { and, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
 import { withErrorHandling } from '@/lib/api/error-handler';
 import { withAuth } from '@/lib/api/middleware/auth';
-import { badRequest, internalError, success } from '@/lib/api/response';
+import { badRequest, success } from '@/lib/api/response';
 import { db } from '@/lib/db';
 import { bookmarkTags, bookmarks, tags } from '@/lib/db/schema';
 

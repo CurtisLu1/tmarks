@@ -2,7 +2,7 @@
 import fc from 'fast-check';
 import { describe, expect, it, vi } from 'vitest';
 import { collectAssetKeys, deleteAssetsFromRecords } from '@/lib/bookmarks/delete';
-import type { StorageProvider } from '@/lib/storage/interface';
+import type { StorageProvider, UploadResult } from '@/lib/storage/interface';
 
 vi.mock('@/lib/storage', () => {
   const mockStorage: StorageProvider = {
@@ -28,10 +28,10 @@ vi.mock('@/lib/storage', () => {
 class MockStorage implements StorageProvider {
   public deleted: string[] = [];
   // Unused methods for this test
-  async upload(): Promise<any> {
+  async upload(): Promise<UploadResult> {
     throw new Error('not implemented');
   }
-  async download(): Promise<any> {
+  async download(): Promise<Buffer | null> {
     throw new Error('not implemented');
   }
   async getSignedUrl(): Promise<string> {

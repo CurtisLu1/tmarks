@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { and, count, eq, ilike, isNull } from 'drizzle-orm';
-import { badRequest, conflict, created, internalError, success } from '@/lib/api/response';
+import { badRequest, conflict, created, success } from '@/lib/api/response';
 import { withErrorHandling } from '@/lib/api/error-handler';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { db } from '@/lib/db';

@@ -13,7 +13,6 @@ import { withAuth } from '@/lib/api/middleware/auth';
 import { db } from '@/lib/db';
 import { bookmarkTags, tags } from '@/lib/db/schema';
 import { sanitizeString } from '@/lib/validation';
-import type { Tag } from '@/lib/types';
 
 interface UpdateTagRequest {
   name?: string;
