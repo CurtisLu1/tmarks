@@ -244,7 +244,7 @@ function TitleOnlyCard({
 
         {/* 批量选择复选框 */}
         {batchMode && onToggleSelect && (
-          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
+          <div className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-3 z-10">
             <button
               onClick={(e) => {
                 e.preventDefault()
@@ -296,7 +296,7 @@ function TitleOnlyCard({
         )}
 
         {/* 内容区 - 移动端更紧凑 */}
-        <div className="relative z-10 px-3 py-3 sm:px-5 sm:py-4 space-y-1.5 sm:space-y-2 pointer-events-none">
+        <div className={`relative z-10 px-3 py-3 sm:px-5 sm:py-4 space-y-1.5 sm:space-y-2 pointer-events-none ${batchMode ? 'pl-9 sm:pl-12' : ''}`}>
           {/* 置顶标识 - 移动端也显示 */}
           {bookmark.is_pinned && (
             <div className="flex items-center gap-1 mb-1">
@@ -363,7 +363,7 @@ function TitleOnlyCard({
                     handleCardClick()
                   }
                 }}
-                className="pointer-events-auto text-left text-xs sm:text-sm font-semibold leading-snug text-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-md"
+                className="pointer-events-auto text-left text-xs sm:text-sm font-semibold leading-snug text-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-md line-clamp-2 break-words whitespace-normal"
                 title={bookmark.title?.trim() || bookmark.url}
               >
                 {bookmark.title?.trim() || bookmark.url}
@@ -374,7 +374,7 @@ function TitleOnlyCard({
                 href={bookmark.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="pointer-events-auto flex-shrink-0 text-[10px] sm:text-xs text-muted-foreground/60 hover:text-primary transition-colors truncate"
+                className="pointer-events-auto flex-shrink-0 text-[10px] sm:text-xs text-muted-foreground/60 hover:text-primary transition-colors line-clamp-2 break-all whitespace-normal"
                 onClick={(e) => {
                   if (batchMode) {
                     e.preventDefault()
