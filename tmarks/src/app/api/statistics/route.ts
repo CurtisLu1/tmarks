@@ -23,11 +23,15 @@ async function handleGet(request: NextRequest, userId: string) {
         orderBy: [sql`${statistics.statDate} ASC`],
     });
 
-    // Get current tab group counts (non-deleted)
+    // Get current tab group counts (non-deleted, exclude folders)
     const [groupsCount] = await db
         .select({ count: sql<number>`count(*)` })
         .from(tabGroups)
-        .where(and(eq(tabGroups.userId, userId), isNull(tabGroups.deletedAt)));
+        .where(and(
+            eq(tabGroups.userId, userId),
+            isNull(tabGroups.deletedAt),
+            eq(tabGroups.isFolder, false)
+        ));
 
     // Get deleted tab group counts
     const [deletedGroupsCount] = await db
