@@ -13,26 +13,28 @@ interface TagItemProps {
 }
 
 export function TagItem({ tag, isSelected, isRelated, hasSelection, layout, onToggle }: TagItemProps) {
+  // 选中状态：使用浅色背景 + 深色文字，更柔和
+  // hasSelection 状态：不要太暗淡，保持可读性
   const stateClasses = isSelected
-    ? 'border border-transparent bg-primary text-primary-content shadow-inner ring-1 ring-primary/40'
+    ? 'border-2 border-primary bg-primary/15 text-primary shadow-sm'
     : isRelated
-      ? 'border border-transparent bg-accent/5 text-accent'
+      ? 'border border-primary/40 bg-primary/5 text-primary'
       : hasSelection
-        ? 'border border-transparent bg-base-200/80 text-muted-foreground opacity-70 ring-1 ring-transparent'
-        : 'border border-border bg-card hover:border-primary/50 ring-1 ring-transparent'
+        ? 'border border-border bg-muted/30 text-foreground/70'
+        : 'border border-border bg-card hover:border-primary/50 hover:bg-muted/20'
 
   const indicatorClasses = isSelected
-    ? 'bg-primary-content/20 border-2 border-primary-content'
+    ? 'bg-primary border-2 border-primary'
     : isRelated
-      ? 'bg-accent/20 border-2 border-accent'
+      ? 'bg-primary/20 border-2 border-primary/50'
       : 'bg-transparent border-2 border-border'
 
   const countClasses = isSelected
-    ? 'bg-primary-content/25 text-primary-content'
+    ? 'bg-primary/20 text-primary font-semibold'
     : isRelated
-      ? 'bg-accent/20 text-accent'
+      ? 'bg-primary/10 text-primary'
       : hasSelection
-        ? 'bg-base-300 text-muted-foreground'
+        ? 'bg-muted text-muted-foreground'
         : 'bg-muted text-muted-foreground'
 
   const layoutClasses = layout === 'masonry'

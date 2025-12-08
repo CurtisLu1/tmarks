@@ -376,9 +376,9 @@ export default function BookmarksPage() {
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] flex flex-col overflow-hidden touch-pan-y">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-6 w-full h-full overflow-hidden touch-pan-y">
+      <div className="flex flex-col lg:flex-row gap-0 lg:gap-4 w-full h-full overflow-hidden touch-pan-y">
         {/* 左侧：标签侧边栏 - 桌面端显示 */}
-        <aside className="hidden lg:block lg:col-span-3 order-2 lg:order-1 fixed top-[calc(5rem+0.75rem)] sm:top-[calc(5rem+1rem)] md:top-[calc(5rem+1.5rem)] left-3 sm:left-4 md:left-6 bottom-3 w-[calc(25%-1.5rem)] z-40 flex flex-col overflow-hidden">
+        <aside className="hidden lg:flex flex-shrink-0 w-60 xl:w-64 2xl:w-72 order-2 lg:order-1 flex-col overflow-hidden">
           <TagSidebar
             selectedTags={selectedTags}
             onTagsChange={(next) => setQueryStates({ tags: next })}
@@ -391,7 +391,7 @@ export default function BookmarksPage() {
         </aside>
 
         {/* 右侧：书签列表 */}
-        <main className="lg:col-span-9 lg:col-start-4 order-1 lg:order-2 flex flex-col h-full overflow-hidden w-full min-w-0">
+        <main className="flex-1 order-1 lg:order-2 flex flex-col h-full overflow-hidden w-full min-w-0">
           {/* 顶部操作栏 */}
           <div className="flex-shrink-0 px-3 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-6 pb-3 sm:pb-4 w-full">
             <div className="card shadow-float w-full">
@@ -536,13 +536,12 @@ export default function BookmarksPage() {
                               : 'all';
                         setQueryStates({ visibility: nextFilter });
                       }}
-                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all shadow-float touch-manipulation flex-shrink-0 ${
-                        visibilityFilter === 'all'
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all shadow-float touch-manipulation flex-shrink-0 ${visibilityFilter === 'all'
                           ? 'bg-muted text-foreground hover:bg-muted/80'
                           : visibilityFilter === 'public'
                             ? 'bg-success/10 text-success hover:bg-success/20'
                             : 'bg-warning/10 text-warning hover:bg-warning/20'
-                      }`}
+                        }`}
                       title="切换可见性"
                       aria-label="切换可见性"
                       type="button"
@@ -591,11 +590,10 @@ export default function BookmarksPage() {
                           setSelectedIds([]);
                         }
                       }}
-                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all shadow-float touch-manipulation flex-shrink-0 ${
-                        batchMode
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all shadow-float touch-manipulation flex-shrink-0 ${batchMode
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted text-foreground hover:bg-muted/80'
-                      }`}
+                        }`}
                       title={batchMode ? '退出批量操作' : '批量操作'}
                       aria-label={batchMode ? '退出批量操作' : '批量操作'}
                       type="button"
@@ -605,7 +603,7 @@ export default function BookmarksPage() {
 
                     <button
                       onClick={() => handleOpenForm()}
-                      className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-primary to-secondary text-primary-content flex items-center justify-center shadow-float hover:shadow-xl transition-all hover:scale-105 active:scale-95 touch-manipulation flex-shrink-0"
+                      className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-sm hover:bg-primary/90 transition-all active:scale-95 touch-manipulation flex-shrink-0"
                       title="新增书签"
                       aria-label="新增书签"
                       type="button"
