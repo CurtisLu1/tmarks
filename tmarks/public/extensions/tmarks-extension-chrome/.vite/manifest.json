@@ -52,7 +52,7 @@
     "isEntry": true
   },
   "src/options/index.html": {
-    "file": "assets/options-CCUcZT8g.js",
+    "file": "assets/options-lpLnSZ5q.js",
     "name": "options",
     "src": "src/options/index.html",
     "isEntry": true,
@@ -65,11 +65,11 @@
       "_index-DFfaDUBv.js"
     ],
     "css": [
-      "assets/options-C8OlwsWY.css"
+      "assets/options--1oC6I5v.css"
     ]
   },
   "src/popup/index.html": {
-    "file": "assets/popup-CoTxg5oK.js",
+    "file": "assets/popup-ByGefoYb.js",
     "name": "popup",
     "src": "src/popup/index.html",
     "isEntry": true,
@@ -79,7 +79,7 @@
       "_index-DX7QVYQb.js"
     ],
     "css": [
-      "assets/popup-DtvppIuC.css"
+      "assets/popup-ybxQGGYo.css"
     ]
   }
 }
