@@ -341,7 +341,7 @@ export function Popup() {
         </div>
 
         <header className="fixed top-0 left-0 right-0 z-40 px-3 pt-2 pb-2.5 bg-white border-b border-gray-200 shadow-sm rounded-b-2xl">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-nowrap overflow-hidden">
             <button
               onClick={handleBackToSelector}
               className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-gray-600 transition-all duration-200 hover:bg-gray-100 active:scale-95"
@@ -351,20 +351,22 @@ export function Popup() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-[10px] text-blue-600 font-medium">
-              推荐 {recommendedTags.length}
-            </span>
-            <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-[10px] text-indigo-600 font-medium">
-              已选 {selectedTags.length}
-            </span>
-            <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-purple-50 px-2 py-1 text-[10px] text-purple-600 font-medium">
-              库 {existingTags.length}
-            </span>
-            {existingBookmarkId && (
-              <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-[10px] text-green-600 font-medium">
-                ✓ 已收藏
+            <div className="flex items-center gap-1 overflow-hidden flex-shrink min-w-0">
+              <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-[10px] text-blue-600 font-medium">
+                推荐 {recommendedTags.length}
               </span>
-            )}
+              <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-[10px] text-indigo-600 font-medium">
+                已选 {selectedTags.length}
+              </span>
+              <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-purple-50 px-2 py-1 text-[10px] text-purple-600 font-medium">
+                库 {existingTags.length}
+              </span>
+              {existingBookmarkId && (
+                <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-[10px] text-green-600 font-medium">
+                  ✓ 已收藏
+                </span>
+              )}
+            </div>
             <div className="ml-auto flex gap-1.5">
               <button
                 onClick={() => window.close()}
