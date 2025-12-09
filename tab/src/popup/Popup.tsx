@@ -40,6 +40,8 @@ export function Popup() {
     lastSaveDurationMs,
     setSuccessMessage,
     lastSavedBookmarkId,
+    existingBookmarkId,
+    checkExistingBookmark,
   } = useAppStore();
 
   const [customTagInput, setCustomTagInput] = useState('');
@@ -79,6 +81,9 @@ export function Popup() {
         // Extract page info
         await extractPageInfo();
 
+        // Check if URL already has a bookmark
+        await checkExistingBookmark();
+
         // Get AI recommendations
         await recommendTags();
 
@@ -103,7 +108,10 @@ export function Popup() {
   };
 
   const handleCaptureSnapshot = async () => {
-    if (!lastSavedBookmarkId) {
+    // Use existing bookmark ID or last saved bookmark ID
+    const snapshotTargetId = existingBookmarkId || lastSavedBookmarkId;
+
+    if (!snapshotTargetId) {
       setError('请先保存书签');
       return;
     }
@@ -112,7 +120,7 @@ export function Popup() {
     try {
       const response = await new Promise<{ success: boolean; data?: { snapshotId: string; version: number }; error?: string }>((resolve, reject) => {
         chrome.runtime.sendMessage(
-          { type: 'CAPTURE_SNAPSHOT', payload: { bookmarkId: lastSavedBookmarkId } },
+          { type: 'CAPTURE_SNAPSHOT', payload: { bookmarkId: snapshotTargetId } },
           (resp) => {
             if (chrome.runtime.lastError) {
               reject(new Error(chrome.runtime.lastError.message));
@@ -352,6 +360,11 @@ export function Popup() {
             <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-purple-50 px-2 py-1 text-[10px] text-purple-600 font-medium">
               库 {existingTags.length}
             </span>
+            {existingBookmarkId && (
+              <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-[10px] text-green-600 font-medium">
+                ✓ 已收藏
+              </span>
+            )}
             <div className="ml-auto flex gap-1.5">
               <button
                 onClick={() => window.close()}
@@ -379,9 +392,18 @@ export function Popup() {
               {/* Snapshot capture button */}
               <button
                 onClick={handleCaptureSnapshot}
-                disabled={isCapturingSnapshot || !lastSavedBookmarkId}
-                className="rounded-lg border border-blue-300 bg-blue-50 px-2 py-1.5 text-[11px] font-medium text-blue-600 transition-all duration-200 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40 active:scale-95"
-                title={lastSavedBookmarkId ? '截取当前页面快照' : '请先保存书签'}
+                disabled={isCapturingSnapshot || !(existingBookmarkId || lastSavedBookmarkId)}
+                className={`rounded-lg border px-2 py-1.5 text-[11px] font-medium transition-all duration-200 active:scale-95 ${existingBookmarkId || lastSavedBookmarkId
+                  ? 'border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100'
+                  : 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed opacity-40'
+                  }`}
+                title={
+                  existingBookmarkId
+                    ? '截取当前页面快照（已收藏）'
+                    : lastSavedBookmarkId
+                      ? '截取当前页面快照'
+                      : '请先保存书签'
+                }
               >
                 {isCapturingSnapshot ? (
                   <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">

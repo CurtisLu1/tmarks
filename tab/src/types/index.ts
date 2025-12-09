@@ -230,7 +230,8 @@ export type MessageType =
   | 'CAPTURE_SNAPSHOT'
   | 'SYNC_CACHE'
   | 'GET_CONFIG'
-  | 'GET_EXISTING_TAGS';
+  | 'GET_EXISTING_TAGS'
+  | 'CHECK_EXISTING_BOOKMARK';
 
 
 export interface Message<T = any> {

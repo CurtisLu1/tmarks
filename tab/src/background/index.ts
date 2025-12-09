@@ -246,6 +246,34 @@ async function handleMessage(
       };
     }
 
+    case 'CHECK_EXISTING_BOOKMARK': {
+      const { url } = message.payload;
+      if (!url) {
+        return {
+          success: false,
+          error: 'URL is required'
+        };
+      }
+
+      try {
+        const bookmark = await bookmarkAPI.findBookmarkByUrl(url);
+        return {
+          success: true,
+          data: {
+            exists: !!bookmark,
+            bookmarkId: bookmark?.id || null,
+            bookmarkTitle: bookmark?.title || null
+          }
+        };
+      } catch (error) {
+        console.error('[Background] Failed to check existing bookmark:', error);
+        return {
+          success: true,
+          data: { exists: false, bookmarkId: null, bookmarkTitle: null }
+        };
+      }
+    }
+
     default:
       throw new Error(`Unknown message type: ${message.type}`);
   }

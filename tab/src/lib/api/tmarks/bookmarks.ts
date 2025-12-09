@@ -58,7 +58,7 @@ export class BookmarksAPI extends TMarksClient {
     return this.delete<void>(`/bookmarks/${id}`);
   }
 
-  
+
   // ============ 辅助方法 ============
 
   /**
@@ -148,5 +148,20 @@ export class BookmarksAPI extends TMarksClient {
    */
   async unarchiveBookmark(id: string): Promise<CreateBookmarkResponse> {
     return this.updateBookmark(id, { is_archived: false });
+  }
+
+  /**
+   * 通过 URL 查找现有书签
+   * 返回精确匹配的书签，如果不存在返回 null
+   */
+  async findBookmarkByUrl(url: string): Promise<TMarksBookmark | null> {
+    try {
+      const response = await this.getBookmarks({ keyword: url, page_size: 10 });
+      // 精确匹配 URL
+      return response.data.bookmarks.find(b => b.url === url) || null;
+    } catch (error) {
+      console.error('[BookmarksAPI] Failed to find bookmark by URL:', error);
+      return null;
+    }
   }
 }

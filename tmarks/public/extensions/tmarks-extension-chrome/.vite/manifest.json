@@ -1,20 +1,16 @@
 {
-  "../../../@crx/manifest": {
-    "file": "assets/crx-manifest.js-CqjE5-54.js",
+  "../../../../../@crx/manifest": {
+    "file": "assets/crx-manifest.js-Qi0ql5Re.js",
     "name": "crx-manifest.js",
-    "src": "../../../@crx/manifest",
+    "src": "../../../../../@crx/manifest",
     "isEntry": true
   },
-  "_SuccessMessage-CwTjNsGf.js": {
-    "file": "assets/SuccessMessage-CwTjNsGf.js",
+  "_SuccessMessage-DOqMrBA3.js": {
+    "file": "assets/SuccessMessage-DOqMrBA3.js",
     "name": "SuccessMessage",
     "imports": [
       "_index-D4dQ38WE.js"
     ]
-  },
-  "_index-BImy_fb0.js": {
-    "file": "assets/index-BImy_fb0.js",
-    "name": "index"
   },
   "_index-D4dQ38WE.js": {
     "file": "assets/index-D4dQ38WE.js",
@@ -29,19 +25,23 @@
       "_index-D4dQ38WE.js"
     ]
   },
+  "_index-DX7QVYQb.js": {
+    "file": "assets/index-DX7QVYQb.js",
+    "name": "index"
+  },
   "_prompts-CZcZabTo.js": {
     "file": "assets/prompts-CZcZabTo.js",
     "name": "prompts"
   },
   "src/background/index.ts": {
-    "file": "assets/index.ts-C0QgtDsP.js",
+    "file": "assets/index.ts-B_dpg0M3.js",
     "name": "index.ts",
     "src": "src/background/index.ts",
     "isEntry": true,
     "imports": [
       "_index-D4dQ38WE.js",
       "_index-DFfaDUBv.js",
-      "_index-BImy_fb0.js",
+      "_index-DX7QVYQb.js",
       "_prompts-CZcZabTo.js"
     ]
   },
@@ -52,12 +52,12 @@
     "isEntry": true
   },
   "src/options/index.html": {
-    "file": "assets/options-Bj_OiWe3.js",
+    "file": "assets/options-BxPNAjIW.js",
     "name": "options",
     "src": "src/options/index.html",
     "isEntry": true,
     "imports": [
-      "_SuccessMessage-CwTjNsGf.js",
+      "_SuccessMessage-DOqMrBA3.js",
       "_index-D4dQ38WE.js",
       "_prompts-CZcZabTo.js"
     ],
@@ -65,21 +65,21 @@
       "_index-DFfaDUBv.js"
     ],
     "css": [
-      "assets/options-CE0ZbUvu.css"
+      "assets/options-CIO582lf.css"
     ]
   },
   "src/popup/index.html": {
-    "file": "assets/popup-CK0cxoo2.js",
+    "file": "assets/popup-CPQuxRT7.js",
     "name": "popup",
     "src": "src/popup/index.html",
     "isEntry": true,
     "imports": [
-      "_SuccessMessage-CwTjNsGf.js",
+      "_SuccessMessage-DOqMrBA3.js",
       "_index-D4dQ38WE.js",
-      "_index-BImy_fb0.js"
+      "_index-DX7QVYQb.js"
     ],
     "css": [
-      "assets/popup-CIPgoOt7.css"
+      "assets/popup-CFskjh6y.css"
     ]
   }
 }

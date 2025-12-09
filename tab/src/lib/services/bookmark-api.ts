@@ -181,6 +181,25 @@ export class BookmarkAPIClient {
       return false;
     }
   }
+
+  /**
+   * Find bookmark by exact URL match
+   * Returns the bookmark if found, null otherwise
+   */
+  async findBookmarkByUrl(url: string): Promise<{ id: string; title: string } | null> {
+    try {
+      const client = await this.ensureClient();
+      const bookmark = await client.bookmarks.findBookmarkByUrl(url);
+
+      if (bookmark) {
+        return { id: bookmark.id, title: bookmark.title };
+      }
+      return null;
+    } catch (error) {
+      console.error('[BookmarkAPI] Failed to find bookmark by URL:', error);
+      return null;
+    }
+  }
 }
 
 // Singleton instance

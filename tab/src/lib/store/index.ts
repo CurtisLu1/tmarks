@@ -65,9 +65,16 @@ interface AppState {
   recommendTags: () => Promise<void>;
   saveBookmark: () => Promise<string | null>; // Returns bookmark ID if successful
   syncCache: () => Promise<void>;
+  checkExistingBookmark: () => Promise<void>; // Check if current URL already has a bookmark
 
   // Last saved bookmark ID for snapshot capture
   lastSavedBookmarkId: string | null;
+
+  // Existing bookmark ID if current URL is already saved
+  existingBookmarkId: string | null;
+
+  // Whether auto-snapshot is enabled in user settings
+  autoSnapshotEnabled: boolean;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -89,6 +96,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   includeThumbnail: false,
   config: null,
   lastSavedBookmarkId: null,
+  existingBookmarkId: null,
+  autoSnapshotEnabled: false,
 
   // Setters
   setCurrentPage: (page) =>
@@ -458,6 +467,29 @@ export const useAppStore = create<AppState>((set, get) => ({
         error: error instanceof Error ? error.message : 'Failed to sync cache',
         isLoading: false
       });
+    }
+  },
+
+  checkExistingBookmark: async () => {
+    const { currentPage } = get();
+
+    if (!currentPage?.url) {
+      set({ existingBookmarkId: null, autoSnapshotEnabled: false });
+      return;
+    }
+
+    try {
+      // Check if current URL already has a bookmark
+      const result = await sendMessage<{ exists: boolean; bookmarkId: string | null }>({
+        type: 'CHECK_EXISTING_BOOKMARK',
+        payload: { url: currentPage.url }
+      });
+
+      console.log('[Store] Check existing bookmark result:', result);
+      set({ existingBookmarkId: result.bookmarkId });
+    } catch (error) {
+      console.error('[Store] Failed to check existing bookmark:', error);
+      set({ existingBookmarkId: null });
     }
   }
 }));
