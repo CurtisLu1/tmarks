@@ -5,43 +5,43 @@
     "src": "../../../@crx/manifest",
     "isEntry": true
   },
-  "_SuccessMessage-dEYQmj6E.js": {
-    "file": "assets/SuccessMessage-dEYQmj6E.js",
+  "_SuccessMessage-CwTjNsGf.js": {
+    "file": "assets/SuccessMessage-CwTjNsGf.js",
     "name": "SuccessMessage",
     "imports": [
-      "_index-Dr3hl5Cz.js"
+      "_index-D4dQ38WE.js"
     ]
   },
-  "_index-ClstaeQk.js": {
-    "file": "assets/index-ClstaeQk.js",
+  "_index-BImy_fb0.js": {
+    "file": "assets/index-BImy_fb0.js",
     "name": "index"
   },
-  "_index-CwAni-Hp.js": {
-    "file": "assets/index-CwAni-Hp.js",
+  "_index-D4dQ38WE.js": {
+    "file": "assets/index-D4dQ38WE.js",
+    "name": "index"
+  },
+  "_index-DFfaDUBv.js": {
+    "file": "assets/index-DFfaDUBv.js",
     "name": "index",
     "isDynamicEntry": true,
     "imports": [
       "_prompts-CZcZabTo.js",
-      "_index-Dr3hl5Cz.js"
+      "_index-D4dQ38WE.js"
     ]
-  },
-  "_index-Dr3hl5Cz.js": {
-    "file": "assets/index-Dr3hl5Cz.js",
-    "name": "index"
   },
   "_prompts-CZcZabTo.js": {
     "file": "assets/prompts-CZcZabTo.js",
     "name": "prompts"
   },
   "src/background/index.ts": {
-    "file": "assets/index.ts-CgoIthjg.js",
+    "file": "assets/index.ts-C0QgtDsP.js",
     "name": "index.ts",
     "src": "src/background/index.ts",
     "isEntry": true,
     "imports": [
-      "_index-Dr3hl5Cz.js",
-      "_index-CwAni-Hp.js",
-      "_index-ClstaeQk.js",
+      "_index-D4dQ38WE.js",
+      "_index-DFfaDUBv.js",
+      "_index-BImy_fb0.js",
       "_prompts-CZcZabTo.js"
     ]
   },
@@ -52,34 +52,34 @@
     "isEntry": true
   },
   "src/options/index.html": {
-    "file": "assets/options-B3rf9O8a.js",
+    "file": "assets/options-Bj_OiWe3.js",
     "name": "options",
     "src": "src/options/index.html",
     "isEntry": true,
     "imports": [
-      "_SuccessMessage-dEYQmj6E.js",
-      "_index-Dr3hl5Cz.js",
+      "_SuccessMessage-CwTjNsGf.js",
+      "_index-D4dQ38WE.js",
       "_prompts-CZcZabTo.js"
     ],
     "dynamicImports": [
-      "_index-CwAni-Hp.js"
+      "_index-DFfaDUBv.js"
     ],
     "css": [
-      "assets/options-TkisuMHn.css"
+      "assets/options-CE0ZbUvu.css"
     ]
   },
   "src/popup/index.html": {
-    "file": "assets/popup-X53ojo90.js",
+    "file": "assets/popup-CK0cxoo2.js",
     "name": "popup",
     "src": "src/popup/index.html",
     "isEntry": true,
     "imports": [
-      "_SuccessMessage-dEYQmj6E.js",
-      "_index-Dr3hl5Cz.js",
-      "_index-ClstaeQk.js"
+      "_SuccessMessage-CwTjNsGf.js",
+      "_index-D4dQ38WE.js",
+      "_index-BImy_fb0.js"
     ],
     "css": [
-      "assets/popup-Sl3rrrLQ.css"
+      "assets/popup-CIPgoOt7.css"
     ]
   }
 }

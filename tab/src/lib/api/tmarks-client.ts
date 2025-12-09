@@ -39,8 +39,10 @@ export interface CreateBookmarkInput {
   description?: string;
   cover_image?: string;
   tag_ids?: string[];
+  tags?: string[];  // Tag names - backend will create if not exist
   is_pinned?: boolean;
   is_archived?: boolean;
+  is_public?: boolean;
 }
 
 export interface UpdateBookmarkInput {

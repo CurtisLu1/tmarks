@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { and, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
+import { and, desc, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
 import { withErrorHandling } from '@/lib/api/error-handler';
 import { withAuth } from '@/lib/api/middleware/auth';
 import { badRequest, success } from '@/lib/api/response';
@@ -28,7 +28,7 @@ async function handleSearch(request: NextRequest, userId: string) {
         ),
       ),
     )
-    .orderBy(bookmarks.isPinned, bookmarks.updatedAt)
+    .orderBy(desc(bookmarks.isPinned), desc(bookmarks.updatedAt))
     .limit(limit);
 
   const bookmarkIds = bookmarkRows.map((b) => b.id);

@@ -129,77 +129,24 @@ export class BookmarkAPIClient {
 
   /**
    * Add a new bookmark
+   * 
+   * Note: We pass tag names directly via the `tags` field.
+   * The backend will automatically create new tags if they don't exist.
+   * This is more efficient than resolving tag IDs client-side (N+1 problem).
    */
   async addBookmark(bookmark: BookmarkInput): Promise<{ id: string }> {
     const client = await this.ensureClient();
 
     try {
-      // Resolve tag names to tag IDs (create new tags if needed)
-      let tagIds: string[] = [];
-      if (bookmark.tags && bookmark.tags.length > 0) {
-        console.log('[BookmarkAPI] 处理标签:', bookmark.tags);
-
-        // Get existing tags from the API
-        const tagsResponse = await client.tags.getTags();
-        const existingTags = tagsResponse.data.tags;
-
-        console.log('[BookmarkAPI] 已有标签数量:', existingTags.length);
-
-        // For each tag, find or create it
-        for (const tagName of bookmark.tags) {
-          const existingTag = existingTags.find(
-            t => t.name.toLowerCase() === tagName.toLowerCase()
-          );
-
-          if (existingTag) {
-            // Tag exists, use its ID
-            console.log(`[BookmarkAPI] 标签 "${tagName}" 已存在, ID: ${existingTag.id}`);
-            tagIds.push(existingTag.id);
-          } else {
-            // Tag doesn't exist, create it
-            console.log(`[BookmarkAPI] 标签 "${tagName}" 不存在，正在创建...`);
-            try {
-              const newTagResponse = await client.tags.createTag({
-                name: tagName
-              });
-              const newTagId = newTagResponse.data.tag.id;
-              console.log(`[BookmarkAPI] 标签 "${tagName}" 创建成功, ID: ${newTagId}`);
-              tagIds.push(newTagId);
-
-              // Add to existingTags array to avoid duplicate creation
-              existingTags.push(newTagResponse.data.tag);
-            } catch (tagError: any) {
-              // If tag creation fails due to duplicate (race condition), try to find it again
-              if (tagError.code === 'DUPLICATE_TAG') {
-                console.log(`[BookmarkAPI] 标签 "${tagName}" 已被并发创建，重新查找...`);
-                const retryTagsResponse = await client.tags.getTags();
-                const retryTag = retryTagsResponse.data.tags.find(
-                  t => t.name.toLowerCase() === tagName.toLowerCase()
-                );
-                if (retryTag) {
-                  tagIds.push(retryTag.id);
-                  console.log(`[BookmarkAPI] 重新找到标签 "${tagName}", ID: ${retryTag.id}`);
-                } else {
-                  console.error(`[BookmarkAPI] 无法创建或找到标签 "${tagName}"`);
-                  throw tagError;
-                }
-              } else {
-                console.error(`[BookmarkAPI] 创建标签 "${tagName}" 失败:`, tagError);
-                throw tagError;
-              }
-            }
-          }
-        }
-
-        console.log('[BookmarkAPI] 最终标签 IDs:', tagIds);
-      }
+      console.log('[BookmarkAPI] 保存书签:', bookmark.title);
+      console.log('[BookmarkAPI] 标签:', bookmark.tags);
 
       const response = await client.bookmarks.createBookmark({
         title: bookmark.title,
         url: bookmark.url,
         description: bookmark.description,
         cover_image: bookmark.thumbnail,
-        tag_ids: tagIds,
+        tags: bookmark.tags, // Pass tag names directly, backend handles creation
         is_public: bookmark.isPublic ?? false
       });
 
