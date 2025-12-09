@@ -10,10 +10,12 @@ import { useAuthStore } from '@/stores/authStore';
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, _hasHydrated } = useAuthStore();
   const [checking, setChecking] = React.useState(true);
 
   React.useEffect(() => {
+    // 等待水合完成
+    if (!_hasHydrated) return;
     if (isLoading) return;
     if (!isAuthenticated) {
       const loginHref: Route = pathname
@@ -23,9 +25,9 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
       return;
     }
     setChecking(false);
-  }, [isAuthenticated, isLoading, pathname, router]);
+  }, [isAuthenticated, isLoading, _hasHydrated, pathname, router]);
 
-  if (checking || isLoading) {
+  if (!_hasHydrated || checking || isLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background text-foreground">
         <p className="text-sm text-muted-foreground">正在检查登录状态…</p>

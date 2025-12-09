@@ -24,6 +24,8 @@ function LoginPageContent() {
   const searchParams = useSearchParams();
   const login = useAuthStore((state) => state.login);
   const isLoading = useAuthStore((state) => state.isLoading);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const _hasHydrated = useAuthStore((state) => state._hasHydrated);
 
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -33,6 +35,13 @@ function LoginPageContent() {
 
   const nextParam = searchParams?.get('next');
   const nextPath: Route = nextParam && nextParam.startsWith('/') ? (nextParam as Route) : '/';
+
+  // 已登录用户自动重定向
+  React.useEffect(() => {
+    if (_hasHydrated && isAuthenticated) {
+      router.replace(nextPath);
+    }
+  }, [_hasHydrated, isAuthenticated, nextPath, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +63,15 @@ function LoginPageContent() {
       }
     }
   };
+
+  // 等待水合或已登录时显示加载状态
+  if (!_hasHydrated || isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground">
+        正在检查登录状态...
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
@@ -142,4 +160,5 @@ function LoginPageContent() {
     </div>
   );
 }
+
 

@@ -12,6 +12,7 @@ interface AuthState {
   refreshToken: string | null
   isAuthenticated: boolean
   isLoading: boolean
+  _hasHydrated: boolean  // 追踪是否已从 localStorage 恢复状态
 
   // Actions
   login: (username: string, password: string, rememberMe?: boolean) => Promise<void>
@@ -20,6 +21,7 @@ interface AuthState {
   refreshAccessToken: () => Promise<void>
   setUser: (user: User) => void
   clearAuth: () => void
+  setHasHydrated: (hasHydrated: boolean) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -30,6 +32,7 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isAuthenticated: false,
       isLoading: false,
+      _hasHydrated: false,
 
       login: async (username: string, password: string, rememberMe = false) => {
         set({ isLoading: true })
@@ -119,6 +122,10 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
         })
       },
+
+      setHasHydrated: (hasHydrated: boolean) => {
+        set({ _hasHydrated: hasHydrated })
+      },
     }),
     {
       name: 'auth-storage',
@@ -129,6 +136,11 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        // 水合完成后设置标志
+        state?.setHasHydrated(true)
+      },
     }
   )
 )
+
