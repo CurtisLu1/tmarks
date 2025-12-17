@@ -1,0 +1,27 @@
+# Ensure consistent line endings across platforms.
+# Normalize all text files to LF both in the repository and in the working tree.
+* text=auto eol=lf
+
+# Treat common binary assets as binary (no end-of-line conversions).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tgz binary
+*.7z binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mp4 binary
+*.mp3 binary
+*.mov binary
+*.avi binary
+
+
